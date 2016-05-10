@@ -1,0 +1,34 @@
+{
+  "name": "insane-openbazaar-api",
+  "version": "0.0.1",
+  "description": "Openbazaar API client in JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insanity54/insane-openbazaar-api.git"
+  },
+  "keywords": [
+    "openbazaar",
+    "open",
+    "bazaar",
+    "ebay",
+    "bitcoin",
+    "api"
+  ],
+  "author": "Chris Grimmett <chris@grimtech.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/insanity54/insane-openbazaar-api/issues"
+  },
+  "homepage": "https://github.com/insanity54/insane-openbazaar-api#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "foreman": "^1.4.1"
+  },
+  "dependencies": {
+    "underscore": "^1.8.3"
+  }
+}
