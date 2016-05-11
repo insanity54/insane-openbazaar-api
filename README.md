@@ -1,11 +1,15 @@
 # insane-openbazaar-api
-Openbazaar API in Javascript. WARNING: Incomplete, very hacky code!
+Openbazaar API Client. Just a wrapper for curl. WARNING: Incomplete.
 
 
 ## Usage
 
-your openbazaar server credentials go in environment variables
+```javascript
+var Api = require('insane-openbazaar-api');
 
+var api = new Api({
+  "user": 
+```
 
 ## Implemented API
 
