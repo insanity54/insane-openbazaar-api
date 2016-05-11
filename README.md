@@ -7,6 +7,11 @@ Openbazaar API in Javascript. WARNING: Incomplete, very hacky code!
 your openbazaar server credentials go in environment variables
 
 
+## Implemented API
+
+* [x] /api/v1/login
+* [x] /api/v1/profile
+
 
 
 ## Roadmap
