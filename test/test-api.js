@@ -2,18 +2,24 @@ var assert = require('chai').assert;
 var OpenBazaarAPI = require('../index');
 var fs = require('fs');
 var path = require('path');
+var _ = require('underscore');
 
 assert.isDefined(process.env.OB_PASSWORD, 'openbazaar password is not defined in environment! OB_PASSWORD')
 assert.isDefined(process.env.OB_USERNAME, 'openbazaar username is not defined in environment! OB_USERNAME')
 
-
-var ob = new OpenBazaarAPI({
+var apiOptions = {
   "password": process.env.OB_PASSWORD,
-  "username": process.env.OB_USERNAME
-});
+  "username": process.env.OB_USERNAME,
+  "host": process.env.OB_HOST,
+  "proto": process.env.OB_PROTO,
+  "port": process.env.OB_PORT
+};
+apiOptions = _(apiOptions).omit(_.isUndefined);
+
+var ob = new OpenBazaarAPI(apiOptions);
 
 
-describe('curl', function() {
+describe('api', function() {
   describe('isValidGUID', function() {
     it('should return false for guid of invalid length', function() {
       assert.isFalse(ob.isValidGUID('a06aa22a38f0e62221ab74464c311bd88305'));

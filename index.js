@@ -8,15 +8,16 @@ var _ = require('underscore');
  * constructor
  */
 var Api = function Api(options) {
-  this.defaultOpts = {
+  var self = this;
+  self.defaultOpts = {
     "host": "127.0.0.1",
     "port": "18469",
     "proto": "http"
   };
-  this.opts = _.extend({}, this.defaultOpts, options);
+  self.opts = _.extend({}, self.defaultOpts, options);
 
-  if (typeof this.opts.username === 'undefined') throw new Error('username must be defined in options');
-  if (typeof this.opts.password === 'undefined') throw new Error('password must be defined in options');
+  if (typeof self.opts.username === 'undefined') throw new Error('username must be defined in options');
+  if (typeof self.opts.password === 'undefined') throw new Error('password must be defined in options');
 
 }
 
@@ -30,18 +31,21 @@ Api.prototype.isValidGUID = function isValidGUID(guid) {
 
 Api.prototype.login = function login(cb) {
   var self = this;
+  console.log(url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login'));
   var curlLogin = spawn('curl', [
     '--data',
     'username='+self.opts.user+'&'+'password='+self.opts.password,
     '--dump-header',
     'headers.txt',
-    '/api/v1/login'
+    url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login')
   ], {
     'cwd': __dirname
   });
 
   curlLogin.on('close', function(code) {
     //console.log('curl login exit with '+code);
+    if (code == 6) return cb(new Error('curl couldnt resolve host. is your URL correct?'));
+    if (code == 7) return cb(new Error('curl couldnt connect to host. is your openbazaar server running?'))
     if (code !== 0) return cb(new Error('curl couldnt login! curl err code '+code))
     return cb(null);
   });
