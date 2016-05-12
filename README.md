@@ -2,6 +2,9 @@
 
 Openbazaar API client. It's just a curl wrapper. WARNING: Incomplete implementation!!
 
+## Installation
+
+
 
 ## Usage
 
@@ -12,6 +15,14 @@ see ./example/
 
 * [x] /api/v1/login
 * [x] /api/v1/profile
+
+
+## Notes
+
+
+The API is defined as [API blueprint](https://apiblueprint.org) format
+
+
 
 
 ## Roadmap
