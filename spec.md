@@ -5,39 +5,42 @@ FORMAT: 1A
 OpenBazaar API allows consumers to interact with an OpenBazaar-Server
 
 
-# OpenBazaar Root [/api/v1/]
 
-## Group API
-
-## OpenBazaar Login [/api/v1/login]
+# Login [/api/v1/login]
 
 Log in to the OpenBazaar API server
 
 
-### Log in [POST]
+## Login [POST]
+
++ Attributes
+    + username (string) - username to log into the openbazaar server as
+    + password (string) - password to use to log into the openbazaar server
+
++ Request (application/x-www-form-urlencoded)
+    + Body
+        username=test&password=test
 
 + Response 200 (application/json)
     + Headers
-          Date: Thu, 12 May 2016 07:06:46 GMT
-          Content-Length: 17
-          Content-Type: application/json
-          Server: TwistedWeb/16.1.0
           Set-Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
     + Body
         {
             "success": true
         }
 
-+ Parameters
-    + username: boygeorge (required, string) - username to log into the openbazaar server as
-    + password: rosebud (required, number) - password to use to log into the openbazaar server
 
-
-## OpenBazaar Profile [/api/v1/profile]
+# Profile [/api/v1/profile]
 
 Retrieve the user's profile or a profile on the network
 
-### Retrieve Profile [GET]
+## Retrieve Profile [GET]
+
++ Request
+
++ Request
+    + Parameters
+        guid (string) - global user id of the profile to retrieve
 
 + Response 200 (application/json)
     + Headers

@@ -33,8 +33,9 @@ Api.prototype.login = function login(cb) {
   var self = this;
   console.log(url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login'));
   var curlLogin = spawn('curl', [
+    '--trace', 'trace.txt', //@todo #todo remove
     '--data',
-    'username='+self.opts.user+'&'+'password='+self.opts.password,
+    'username='+self.opts.username+'&'+'password='+self.opts.password,
     '--dump-header',
     'headers.txt',
     url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login')

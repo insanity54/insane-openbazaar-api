@@ -12,7 +12,6 @@ var apiOptions = {
   "username": 'test',
   "port": 3000
 };
-apiOptions = _(apiOptions).omit(_.isUndefined);
 
 var ob = new OpenBazaarAPI(apiOptions);
 
@@ -65,7 +64,7 @@ describe('api', function() {
       assert.throws(ob.profile, /no arguments/);
     });
 
-    it('should accept one param, a callback, callback profile as object', function(done) {
+    it('should accept one param, a callback, and callback with profile object', function(done) {
       ob.profile(function(err, prof) {
         assert.isNull(err);
         assert.isObject(prof);
@@ -75,7 +74,7 @@ describe('api', function() {
       });
     });
 
-    it('should accept two params, a GUID and a callback, callback profile as object', function(done) {
+    it('should accept two params, a GUID and a callback, and callback with profile object', function(done) {
       ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, prof) {
         assert.isNull(err);
         assert.isObject(prof);
