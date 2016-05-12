@@ -48,6 +48,11 @@ Retrieve the user's profile or a profile on the network
         Date: Thu, 12 May 2016 07:11:41 GMT
         Content-Type: application/json
         Server: TwistedWeb/16.1.0
+
+# Data Structures
+
+## Author
+
     + Body
         {
         "profile": {

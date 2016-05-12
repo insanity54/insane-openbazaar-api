@@ -1,6 +1,6 @@
 # insane-openbazaar-api
 
-
+[![Build Status](https://travis-ci.org/insanity54/insane-openbazaar-api.svg?branch=master)](https://travis-ci.org/insanity54/insane-openbazaar-api)
 
 Openbazaar API client. It's just a curl wrapper. WARNING: Incomplete implementation!!
 
