@@ -1,5 +1,7 @@
 # insane-openbazaar-api
 
+
+
 Openbazaar API client. It's just a curl wrapper. WARNING: Incomplete implementation!!
 
 
@@ -17,4 +19,3 @@ see ./example/
 ## Roadmap
 
 * [ ] use [request.js](https://npmjs.org/package/request) instead of calling curl through child_process
-* [ ] make environment variable use neater

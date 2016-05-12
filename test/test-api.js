@@ -4,8 +4,8 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 
-assert.isDefined(process.env.OB_PASSWORD, 'openbazaar password is not defined in environment! OB_PASSWORD')
-assert.isDefined(process.env.OB_USERNAME, 'openbazaar username is not defined in environment! OB_USERNAME')
+assert.isDefined(process.env.OB_PASSWORD, 'openbazaar password is not defined in environment! OB_PASSWORD');
+assert.isDefined(process.env.OB_USERNAME, 'openbazaar username is not defined in environment! OB_USERNAME');
 
 var apiOptions = {
   "password": process.env.OB_PASSWORD,
