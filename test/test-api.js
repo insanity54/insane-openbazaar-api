@@ -64,7 +64,7 @@ describe('api', function() {
       assert.throws(ob.profile, /no arguments/);
     });
 
-    it('should accept one param, a callback, and callback with profile object', function(done) {
+    it('should accept one param, a callback. Then callback with profile object', function(done) {
       ob.profile(function(err, prof) {
         assert.isNull(err);
         assert.isObject(prof);
@@ -74,11 +74,11 @@ describe('api', function() {
       });
     });
 
-    it('should accept two params, a GUID and a callback, and callback with profile object', function(done) {
+    it('should accept two params, a GUID and a callback. Then callback with profile object', function(done) {
       ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, prof) {
         assert.isNull(err);
         assert.isObject(prof);
-        assert.match(ob.profile.website, /openbazaar\.org/);
+        assert.match(prof.profile.website, /openbazaar\.org/);
         done();
       })
     });

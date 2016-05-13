@@ -30,17 +30,16 @@ Log in to the OpenBazaar API server
         }
 
 
-# Profile [/api/v1/profile]
+# Owner's Profile [/api/v1/profile]
 
-Retrieve the user's profile or a profile on the network
+Retrieve the user's profile
+
 
 ## Retrieve Profile [GET]
 
 + Request
-
-+ Request
-    + Parameters
-        guid (string) - global user id of the profile to retrieve
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
 
 + Response 200 (application/json)
     + Headers
@@ -48,10 +47,6 @@ Retrieve the user's profile or a profile on the network
         Date: Thu, 12 May 2016 07:11:41 GMT
         Content-Type: application/json
         Server: TwistedWeb/16.1.0
-
-# Data Structures
-
-## Author
 
     + Body
         {
@@ -82,4 +77,58 @@ Retrieve the user's profile or a profile on the network
             "primary_color": 4341011,
             "background_color": 16166683,
             "email": "saveabit@grimtech.net"
+        }
+      }
+
+## Retrieve Network Profile [/api/v1/profile{?guid}]
+
++ Parameters
+    + guid (string) - ID of the openbazaar profile to look up
+
+## Retrieve Profile [GET]
+
++ Request
+    + Parameters
+        guid=a06aa22a38f0e62221ab74464c311bd88305f88c
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+
++ Response 200 (application/json)
+    + Headers
+        Transfer-Encoding: chunked
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {
+          "profile": {
+            "website": "https://openbazaar.org/",
+            "public_key": "42741d5d3a87140c4b850078ec2b625504ee3a711657e42531f5978e4fcf53fd",
+            "about": "<h2>Trade free.</h2><p>OpenBazaar is a decentralized network for trade with no fees and no restrictions.</p><p>Trade happens directly between peers.<i> No middleman</i>.</p><p>If you want to show support for the core developers who built OpenBazaar, check out our products for sale in the store tab.</p>",
+            "guid": "a06aa22a38f0e62221ab74464c311bd88305f88c",
+            "vendor": true,
+            "name": "OpenBazaar",
+            "social_accounts": {
+              "twitter": [
+                null
+              ],
+              "facebook": [
+                null
+              ]
+            },
+            "header_hash": "5f858909c8304c03d00dd27fe525321cff03c52a",
+            "secondary_color": 3362410,
+            "moderation_fee": 0,
+            "moderator": false,
+            "text_color": 16777215,
+            "pgp_key": "",
+            "nsfw": false,
+            "location": "UNITED_STATES",
+            "avatar_hash": "55456e9efbafb5139977d1f86313eaac3293a88b",
+            "short_description": "Trade free.",
+            "handle": "@openbazaar",
+            "primary_color": 4285834,
+            "background_color": 1846074,
+            "email": "project@openbazaar.org"
+          }
         }

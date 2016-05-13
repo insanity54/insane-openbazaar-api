@@ -31,13 +31,12 @@ Api.prototype.isValidGUID = function isValidGUID(guid) {
 
 Api.prototype.login = function login(cb) {
   var self = this;
-  console.log(url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login'));
+  //console.log(url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login'));
   var curlLogin = spawn('curl', [
     '--trace', 'trace.txt', //@todo #todo remove
     '--data',
     'username='+self.opts.username+'&'+'password='+self.opts.password,
-    '--dump-header',
-    'headers.txt',
+    '--dump-header', 'headers.txt',
     url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login')
   ], {
     'cwd': __dirname
@@ -63,7 +62,7 @@ Api.prototype.profile = function profile(guid, cb) {
   var endpoint;
   if (guid) {
     // validate
-    if (!isValidGUID(guid)) return cb(new Error('invalid GUID'), null);
+    if (!self.isValidGUID(guid)) return cb(new Error('invalid GUID'), null);
     guid = guid.toLowerCase();
 
     endpoint = '/api/v1/profile?guid='+guid;
@@ -71,16 +70,15 @@ Api.prototype.profile = function profile(guid, cb) {
   else
     endpoint = '/api/v1/profile';
 
+  var u = url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port,
+      endpoint);
+  //console.log(u);
 
   var curlProfile = spawn('curl', [
     '-L', // follow redirects
     '-b', 'headers.txt', // get cookie from header file
-    url.resolve(
-        self.opts.proto+'://'+
-        self.opts.host+':'+
-        self.opts.port,
-        endpoint
-      )
+    '--trace', 'trace.txt', //@todo #todo remove
+    u
   ], {
     'cwd': __dirname
   });
@@ -93,8 +91,12 @@ Api.prototype.profile = function profile(guid, cb) {
 
   curlProfile.on('close', function(code) {
     //console.log('curl login exit with '+code);
-    if (code !== 0) return cb(new Error('curl couldnt login! curl err code '+code))
-    return cb(null, JSON.parse(d.toString()));
+    if (typeof d === 'undefined') return cb(new Error('no data received from curl'), null);
+    if (code !== 0) return cb(new Error('curl couldnt login! curl err code '+code), null);
+    //console.log(d.toString());
+    try { var p = JSON.parse(d) }
+    catch(e) { return cb(new Error('problem parsing JSON. err='+e)) }
+    return cb(null, p);
   });
 }
 
