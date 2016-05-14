@@ -9,6 +9,15 @@ var _ = require('underscore');
  */
 var Api = function Api(options) {
   var self = this;
+  self.implements = {
+    "getters": [
+      'profile'
+    ],
+    "setters": [
+      'login'
+    ]
+  };
+
   self.defaultOpts = {
     "host": "127.0.0.1",
     "port": "18469",
@@ -94,11 +103,60 @@ Api.prototype.profile = function profile(guid, cb) {
     if (typeof d === 'undefined') return cb(new Error('no data received from curl'), null);
     if (code !== 0) return cb(new Error('curl couldnt login! curl err code '+code), null);
     //console.log(d.toString());
-    try { var p = JSON.parse(d) }
-    catch(e) { return cb(new Error('problem parsing JSON. err='+e)) }
+    var stringifiedData = d.toString();
+    if (/Cannot GET/.test(stringifiedData)) return cb(new Error(stringifiedData));
+    if (/Authorization Error/.test(stringifiedData)) return cb(new Error('Authorization Error'));
+
+    try { var p = JSON.parse(stringifiedData) }
+    catch(e) {
+      return cb(new Error('problem parsing JSON. err='+e))
+    }
     return cb(null, p);
   });
 }
 
+// ob.get('profile', 'aadsjfiasjfoaij3983', function(err, prof) {
+//
+// });
+
+
+Api.prototype.get = function get(item, arg, cb) {
+  var self = this;
+
+  if (typeof cb !== 'function') throw new Error('check your code. get() needs third param a callback');
+  if (typeof arg === 'undefined') throw new Error('check your code. get() needs second param an argument');
+  if (typeof item !== 'string') throw new Error('check your code. get() needs first param a string');
+
+  // try to do the thing the user wants
+  var i = _.indexOf(self.implements.getters, item.toLowerCase())
+  if (i !== -1) {
+    var count = 0;
+    function doUserRequest(cb) {
+      count += 1;
+      self[self.implements.getters[i]](arg, function(err, reply) {
+        if (err) {
+          if (count > 2) return cb(err); // give up if cycling
+          if (/Authentication Error/.test(err)) {
+            // if there is an authentication problem, try logging in
+            self.login(function(err) {
+              if (err) return cb(err);
+              doUserRequest(cb);
+            });
+          }
+          // error was not Auth related
+          else return cb(err);
+        }
+        // there was no error
+        return cb(null, reply);
+      });
+    }
+
+    doUserRequest(function(err, res) {
+      if (err) return cb(err);
+      return cb(null, res);
+    });
+  }
+
+}
 
 module.exports = Api;
