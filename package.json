@@ -1,6 +1,6 @@
 {
   "name": "insane-openbazaar-api",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Openbazaar API client. wraps curl.",
   "main": "index.js",
   "scripts": {
