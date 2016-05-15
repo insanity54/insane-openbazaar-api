@@ -90,7 +90,7 @@ Retrieve the user's profile
         Server: TwistedWeb/16.1.0
         Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
     + Body
-        Cannot GET /api/v1/profile?guid=a06aa22a38f0e62221ab74464c311bd88305f88c
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
 
 
 ## Network Profile [/api/v1/profile{?guid}]

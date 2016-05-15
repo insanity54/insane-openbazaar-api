@@ -2,6 +2,7 @@ var spawn = require('child_process').spawn;
 var url = require('url');
 var fs = require('fs');
 var _ = require('underscore');
+var path = require('path');
 
 
 /**
@@ -17,6 +18,12 @@ var Api = function Api(options) {
       'login'
     ]
   };
+
+  // @todo this should really be in-memory
+  //       so a user can create multiple instances of insane-openbazaar-api
+  //       and have each instance connect to a different OpenBazaar-Server
+  //       and carry out authentication in isolation
+  self.cookieFile = path.join(__dirname, 'headers.txt');
 
   self.defaultOpts = {
     "host": "127.0.0.1",
@@ -68,6 +75,11 @@ Api.prototype.profile = function profile(guid, cb) {
     cb = guid;
     guid = '';
   }
+
+  // make sure we have auth cookie required to receive data from OpenBazaar-Server
+  try { fs.accessSync(self.cookieFile) }
+  catch(e) { return cb(new Error('no cookie exists! (there is no headers.txt)'), null) }
+
   var endpoint;
   if (guid) {
     // validate
@@ -142,7 +154,7 @@ Api.prototype.get = function get(item, arg, cb) {
     self[self.implements.getters[i]](arg, function(err, reply) {
       if (err) {
         if (count > 2) return cb(err, null); // give up if cycling
-        if (!/Authorization Error/.test(err)) return cb(err);
+        if (!/Authorization Error/.test(err) && !/no cookie/.test(err)) return cb(err);
 
         // if there is an authentication problem, try logging in
         self.login(function(err) {

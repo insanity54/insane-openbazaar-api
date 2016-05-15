@@ -69,4 +69,7 @@ The OpenBazaar-Server API is defined as [API blueprint](https://apiblueprint.org
 
 ## Roadmap
 
+* [ ] instead of having curl write the headers file to `headers.txt`, use child_process to send said headers to memory.
+      save the headers in `ob.headers` so multiple instances of insane-openbazaar-api class can be running and connected
+      to separate OpenBazaar-Servers.
 * [ ] use [request.js](https://npmjs.org/package/request) instead of calling curl through child_process

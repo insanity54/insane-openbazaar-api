@@ -35,3 +35,4 @@ node_modules
 .env
 headers.txt
 trace.txt
+*~
