@@ -7,26 +7,29 @@ var _ = require('underscore');
 // assert.isDefined(process.env.OB_PASSWORD, 'openbazaar password is not defined in environment! OB_PASSWORD');
 // assert.isDefined(process.env.OB_USERNAME, 'openbazaar username is not defined in environment! OB_USERNAME');
 
-//var drakov = require('drakov');
-
-var drakovArgs = {
-    sourceFiles: path.join(__dirname, '..', 'spec.md'),
-    stealthmode: true,
-    serverPort: 3000
-};
+if (process.env.TRAVIS) {
+  var drakov = require('drakov');
+  var drakovArgs = {
+      sourceFiles: path.join(__dirname, '..', 'spec.md'),
+      stealthmode: false,
+      serverPort: 3000
+  };
+}
 
 var ob;
 var obb;
 
 describe('api', function() {
 
-  // before(function(done) {
-  //   drakov.run(drakovArgs, done);
-  // });
-  //
-  // after(function(done) {
-  //   drakov.stop(done);
-  // });
+  if (process.env.TRAVIS) {
+    before(function(done) {
+      drakov.run(drakovArgs, done);
+    });
+
+    after(function(done) {
+      drakov.stop(done);
+    });
+  }
 
   beforeEach(function(done) {
     var apiOptions = {
