@@ -19,7 +19,8 @@ var Api = function Api(options) {
     ]
   };
 
-  // @todo this should really be in-memory
+  // https://github.com/insanity54/insane-openbazaar-api/issues/1
+  // @todo cookieFile contents should really be in-memory
   //       so a user can create multiple instances of insane-openbazaar-api
   //       and have each instance connect to a different OpenBazaar-Server
   //       and carry out authentication in isolation
@@ -32,9 +33,17 @@ var Api = function Api(options) {
   };
   self.opts = _.extend({}, self.defaultOpts, options);
 
-  if (typeof self.opts.username === 'undefined') throw new Error('username must be defined in options');
-  if (typeof self.opts.password === 'undefined') throw new Error('password must be defined in options');
+  if (typeof self.opts.username === 'undefined')
+    throw new Error('username must be defined in options');
 
+  if (typeof self.opts.password === 'undefined')
+    throw new Error('password must be defined in options');
+
+  if (/:\/\//.test(self.opts.proto))
+    throw new Error('please remove the colon slash slash (://) from proto');
+
+  if (!_.contains(['http', 'https'], self.opts.proto))
+    throw new Error('proto must be either http or https');
 }
 
 
