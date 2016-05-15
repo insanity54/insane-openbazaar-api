@@ -7,6 +7,14 @@ var _ = require('underscore');
 // assert.isDefined(process.env.OB_PASSWORD, 'openbazaar password is not defined in environment! OB_PASSWORD');
 // assert.isDefined(process.env.OB_USERNAME, 'openbazaar username is not defined in environment! OB_USERNAME');
 
+//var drakov = require('drakov');
+
+var argv = {
+    sourceFiles: path.join(__dirname, '..', 'spec.md'),
+    serverPort: 3000
+};
+
+
 var apiOptions = {
   "password": 'test',
   "username": 'test',
@@ -21,6 +29,15 @@ var ob = new OpenBazaarAPI(apiOptions);
 
 
 describe('api', function() {
+
+  // before(function(done) {
+  //   drakov.run(argv, done);
+  // });
+  //
+  // after(function(done) {
+  //   drakov.stop(done);
+  // });
+
   describe('isValidGUID', function() {
     it('should return false for guid of invalid length', function() {
       assert.isFalse(ob.isValidGUID('a06aa22a38f0e62221ab74464c311bd88305'));
@@ -79,6 +96,7 @@ describe('api', function() {
     it('should get a profile', function(done) {
       ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
         assert.isNull(err);
+        assert.isObject(reply);
         assert.match(reply.profile.website, /openbazaar\.org/);
         done();
       });
@@ -87,9 +105,10 @@ describe('api', function() {
     it('should log in, if not already logged in', function(done) {
       // delete header file which contains auth cookie
       fs.unlinkSync(path.join(__dirname, '..', 'headers.txt'));
-      ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, prof) {
+      ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
         assert.isNull(err);
-        assert.match(prof.profile.website, /openbazaar\.org/);
+        assert.isObject(reply);
+        assert.match(reply.profile.website, /openbazaar\.org/);
         done();
       });
     });

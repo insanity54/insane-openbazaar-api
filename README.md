@@ -10,7 +10,47 @@ Openbazaar API client. It's just a curl wrapper. WARNING: Incomplete implementat
 
 ## Usage
 
-see ./example/
+```js
+// include the module
+var OpenBazaarAPI = require('insane-openbazaar-api');
+
+// create a new instance
+var ob = new OpenBazaarAPI({
+  "username": "chris_grimmett", // the username to your openbazaar server
+  "password": "rosebud"         // the password to your openbazaar server
+});
+
+// log into your openbazaar server
+ob.login(function(err) {
+  if (err) throw err;
+
+  // get your openbazaar profile description
+  ob.profile(function(err, reply) {
+    if (err) throw err;
+    console.log(reply.profile.short_description);
+
+    // get someone else's profile
+    ob.profile(function('a06aa22a38f0e62221ab74464c311bd88305f88c', err, reply) {
+      if (err) throw err;
+      console.log(reply.profile.website);
+    });
+  });
+});
+
+```
+
+
+### Convenience methods
+
+`ob.login` and `ob.profile` are simple wrappers to the OpenBazaar-Server API endpoints. You have to make sure that your app is logged into the OpenBazaar-Server before you can call `ob.profile`. If the OpenBazaar-Server restarts while your API client is running, your past authentication cookies are invalidated and you have to log in again. This means you have to write extra code to check the state of your login, which can be annoying. To make your job easier, I've made a convenience method for getting information from the API. Just call it and expect a response. Calling .get() will ensure that you have a valid authentication cookie and you're able to receive information from the API.
+
+```js
+ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
+  if (err) throw err;
+  console.log(reply.profile.handle);
+});
+```
+
 
 
 ## Implemented API
@@ -22,7 +62,7 @@ see ./example/
 ## Notes
 
 
-The API is defined as [API blueprint](https://apiblueprint.org) format
+The OpenBazaar-Server API is defined as [API blueprint](https://apiblueprint.org) format
 
 
 

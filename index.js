@@ -127,35 +127,41 @@ Api.prototype.get = function get(item, arg, cb) {
   if (typeof arg === 'undefined') throw new Error('check your code. get() needs second param an argument');
   if (typeof item !== 'string') throw new Error('check your code. get() needs first param a string');
 
-  // try to do the thing the user wants
+
   var i = _.indexOf(self.implements.getters, item.toLowerCase())
-  if (i !== -1) {
-    var count = 0;
-    function doUserRequest(cb) {
-      count += 1;
-      self[self.implements.getters[i]](arg, function(err, reply) {
-        if (err) {
-          if (count > 2) return cb(err); // give up if cycling
-          if (/Authentication Error/.test(err)) {
-            // if there is an authentication problem, try logging in
-            self.login(function(err) {
-              if (err) return cb(err);
-              doUserRequest(cb);
-            });
-          }
-          // error was not Auth related
-          else return cb(err);
-        }
+  if (i === -1)
+    throw new Error('the method passed to get() is not one that is implemented. Check your code.');
+
+  var count = 0;
+  // try to do the thing the user wants
+  // if there is an auth error, this is probably because we are not logged in
+  // so attempt a login.
+  // then try the thing the user wants again. do this up to 3 times.
+  function doUserRequest(cb) {
+    count += 1;
+    self[self.implements.getters[i]](arg, function(err, reply) {
+      if (err) {
+        if (count > 2) return cb(err, null); // give up if cycling
+        if (!/Authorization Error/.test(err)) return cb(err);
+
+        // if there is an authentication problem, try logging in
+        self.login(function(err) {
+          if (err) return cb(err, null);
+          return doUserRequest(cb);
+        });
+      }
+      else
         // there was no error
         return cb(null, reply);
-      });
-    }
-
-    doUserRequest(function(err, res) {
-      if (err) return cb(err);
-      return cb(null, res);
     });
   }
+
+  doUserRequest(function(err, res) {
+    if (err) return cb(err);
+    return cb(null, res);
+  });
+
+
 
 }
 
