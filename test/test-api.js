@@ -4,9 +4,11 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 
-// assert.isDefined(process.env.OB_PASSWORD, 'openbazaar password is not defined in environment! OB_PASSWORD');
-// assert.isDefined(process.env.OB_USERNAME, 'openbazaar username is not defined in environment! OB_USERNAME');
 
+// only run drakov from inside this modules if the environment is TRAVIS-CI.
+// I do this because the output of drakov is messy.
+// For local development, I much prefer to run drakov in a separate terminal
+// example: `drakov -f ./spec.mf -s 3000`
 if (process.env.TRAVIS) {
   var drakov = require('drakov');
   var drakovArgs = {
