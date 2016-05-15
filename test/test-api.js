@@ -7,7 +7,7 @@ var _ = require('underscore');
 // assert.isDefined(process.env.OB_PASSWORD, 'openbazaar password is not defined in environment! OB_PASSWORD');
 // assert.isDefined(process.env.OB_USERNAME, 'openbazaar username is not defined in environment! OB_USERNAME');
 
-//var drakov = require('drakov');
+var drakov = require('drakov');
 
 var argv = {
     sourceFiles: path.join(__dirname, '..', 'spec.md'),
@@ -30,13 +30,13 @@ var ob = new OpenBazaarAPI(apiOptions);
 
 describe('api', function() {
 
-  // before(function(done) {
-  //   drakov.run(argv, done);
-  // });
-  //
-  // after(function(done) {
-  //   drakov.stop(done);
-  // });
+  before(function(done) {
+    drakov.run(argv, done);
+  });
+
+  after(function(done) {
+    drakov.stop(done);
+  });
 
   describe('isValidGUID', function() {
     it('should return false for guid of invalid length', function() {
