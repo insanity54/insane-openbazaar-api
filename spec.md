@@ -43,7 +43,6 @@ Retrieve the user's profile
 
 + Response 200 (application/json)
     + Headers
-        Transfer-Encoding: chunked
         Date: Thu, 12 May 2016 07:11:41 GMT
         Content-Type: application/json
         Server: TwistedWeb/16.1.0
@@ -84,7 +83,6 @@ Retrieve the user's profile
 
 + Response 401 (text/html)
     + Headers
-        Transfer-Encoding: chunked
         Date: Fri, 13 May 2016 23:59:58 GMT
         Content-Type: text/html
         Server: TwistedWeb/16.1.0
@@ -108,7 +106,6 @@ Retrieve the user's profile
 
 + Response 200 (application/json)
     + Headers
-        Transfer-Encoding: chunked
         Date: Thu, 12 May 2016 07:11:41 GMT
         Content-Type: application/json
         Server: TwistedWeb/16.1.0
@@ -150,7 +147,6 @@ Retrieve the user's profile
 
 + Response 401 (text/html)
     + Headers
-        Transfer-Encoding: chunked
         Date: Fri, 13 May 2016 23:59:58 GMT
         Content-Type: text/html
         Server: TwistedWeb/16.1.0

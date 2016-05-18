@@ -69,13 +69,13 @@ describe('api', function() {
 
     beforeEach(function(done) {
       var apiOptions = {
-        // "password": 'test',
-        // "username": 'test',
-        // "port": 3000,
-        "port": process.env.OB_PORT,
-        "host": process.env.OB_HOST,
-        "username": process.env.OB_USERNAME,
-        "password": process.env.OB_PASSWORD
+        "password": 'test',
+        "username": 'test',
+        "port": 3000,
+        // "port": process.env.OB_PORT,
+        // "host": process.env.OB_HOST,
+        // "username": process.env.OB_USERNAME,
+        // "password": process.env.OB_PASSWORD
       };
 
       var badOptions = _.extend({}, apiOptions, {

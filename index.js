@@ -119,13 +119,29 @@ Api.prototype.profile = function profile(guid, cb) {
       //console.log('response to profile is =v')
       //console.log(res);
       if (err || !res.ok) {
+        console.log(err);
         return cb(new Error(err));
       } else {
-        if (res.statusCode !== 200) return cb(new Error('Cannot GET'), null);
-        if (typeof res === 'undefined') return cb(new Error('no data received from request'), null);
-        if (typeof res.body === 'undefined') return cb(new Error('no body received in request'), null);
-        if (typeof res.body.profile === 'undefined') return cb(new Error('no profile received in request'), null);
-        if (/Authorization Error/.test(res)) return cb(new Error('Authorization Error'), null);
+        if (res.statusCode !== 200) {
+          console.log('status code was not 200');
+          return cb(new Error('Cannot GET'), null);
+        }
+        if (typeof res === 'undefined') {
+          console.log('res was undefined');
+          return cb(new Error('no data received from request'), null);
+        }
+        if (typeof res.body === 'undefined') {
+          console.log('res.body was undef');
+          return cb(new Error('no body received in request'), null);
+        }
+        if (typeof res.body.profile === 'undefined') {
+          console.log('res.body.profile was undef');
+          return cb(new Error('no profile received in request'), null);
+        }
+        if (/Authorization Error/.test(res)) {
+          console.log('res auth error')
+          return cb(new Error('Authorization Error'), null);
+        }
         return cb(null, res.body);
       }
     });
