@@ -1,8 +1,15 @@
-var spawn = require('child_process').spawn;
+//var spawn = require('child_process').spawn;
 var url = require('url');
 var fs = require('fs');
 var _ = require('underscore');
 var path = require('path');
+var request = require('superagent');
+
+
+
+
+
+
 
 
 /**
@@ -35,10 +42,10 @@ var Api = function Api(options) {
   self.opts = _.extend({}, self.defaultOpts, options);
 
   if (typeof self.opts.username === 'undefined')
-    throw new Error('username must be defined in options');
+    throw new Error('username must be passed to insane-openbazaar-api constructor. got '+self.opts.username);
 
   if (typeof self.opts.password === 'undefined')
-    throw new Error('password must be defined in options');
+    throw new Error('password must be passed to insane-openbazaar-api constructor. got '+self.opts.password);
 
   if (/:\/\//.test(self.opts.proto))
     throw new Error('please remove the colon slash slash (://) from proto');
@@ -57,24 +64,26 @@ Api.prototype.isValidGUID = function isValidGUID(guid) {
 
 Api.prototype.login = function login(cb) {
   var self = this;
-  //console.log(url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login'));
-  var curlLogin = spawn('curl', [
-    '--trace', 'trace.txt', //@todo #todo remove
-    '--data',
-    'username='+self.opts.username+'&'+'password='+self.opts.password,
-    '--dump-header', '-', // dump headers to stdout
-    url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login')
-  ], {
-    'cwd': __dirname
-  });
 
-  curlLogin.on('close', function(code) {
-    //console.log('curl login exit with '+code);
-    if (code == 6) return cb(new Error('curl couldnt resolve host. is your URL correct?'));
-    if (code == 7) return cb(new Error('curl couldnt connect to host. is your openbazaar server running?'))
-    if (code !== 0) return cb(new Error('curl couldnt login! curl err code '+code))
-    return cb(null);
-  });
+  var req = request
+    .post(url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login'))
+    .send({ username: self.opts.username, password: self.opts.password })
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .set('Accept', 'application/json')
+    .end(function(err, res) {
+      if (err || !res.ok)
+        return cb(new Error(err));
+
+      if (typeof res === 'undefined') return cb(new Error('no data received from request'), null);
+
+      //console.log(res.headers['set-cookie'][0])
+      self.cookieString = res.headers['set-cookie'][0];
+      self.cookieString = self.cookieString.substring(0, self.cookieString.indexOf(';'));
+      //console.log(self.cookieString);
+      return cb(null);
+
+
+    });
 }
 
 
@@ -101,43 +110,27 @@ Api.prototype.profile = function profile(guid, cb) {
 
   var u = url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port,
       endpoint);
-  //console.log(u);
 
-  var curlProfile = spawn('curl', [
-    '-L', // follow redirects
-    '-b', self.cookieString, // get cookie from memory
-    '--trace', 'trace.txt', //@todo #todo remove
-    u
-  ], {
-    'cwd': __dirname
-  });
-
-  var d;
-  curlProfile.stdout.on('data', function(data) {
-    //console.log('stdout '+data);
-    d = data;
-  });
-
-  curlProfile.on('close', function(code) {
-    //console.log('curl login exit with '+code);
-    if (typeof d === 'undefined') return cb(new Error('no data received from curl'), null);
-    if (code !== 0) return cb(new Error('curl couldnt login! curl err code '+code), null);
-    //console.log(d.toString());
-    var stringifiedData = d.toString();
-    if (/Cannot GET/.test(stringifiedData)) return cb(new Error(stringifiedData));
-    if (/Authorization Error/.test(stringifiedData)) return cb(new Error('Authorization Error'));
-
-    try { var p = JSON.parse(stringifiedData) }
-    catch(e) {
-      return cb(new Error('problem parsing JSON. err='+e))
-    }
-    return cb(null, p);
-  });
+  //console.log('sending cookie--' + self.cookieString)
+  var req = request
+    .get(u)
+    .set('Cookie', self.cookieString)
+    .end(function(err, res) {
+      //console.log('response to profile is =v')
+      //console.log(res);
+      if (err || !res.ok) {
+        return cb(new Error(err));
+      } else {
+        if (res.statusCode !== 200) return cb(new Error('Cannot GET'), null);
+        if (typeof res === 'undefined') return cb(new Error('no data received from request'), null);
+        if (typeof res.body === 'undefined') return cb(new Error('no body received in request'), null);
+        if (typeof res.body.profile === 'undefined') return cb(new Error('no profile received in request'), null);
+        if (/Authorization Error/.test(res)) return cb(new Error('Authorization Error'), null);
+        return cb(null, res);
+      }
+    });
 }
 
-// ob.get('profile', 'aadsjfiasjfoaij3983', function(err, prof) {
-//
-// });
 
 
 Api.prototype.get = function get(item, arg, cb) {
@@ -150,7 +143,7 @@ Api.prototype.get = function get(item, arg, cb) {
 
   var i = _.indexOf(self.implements.getters, item.toLowerCase())
   if (i === -1)
-    throw new Error('the method passed to get() is not one that is implemented. Check your code.');
+    throw new Error('the method you passed to get() is not one that is implemented. Check your code.');
 
   var count = 0;
   // try to do the thing the user wants
@@ -161,9 +154,12 @@ Api.prototype.get = function get(item, arg, cb) {
     count += 1;
     self[self.implements.getters[i]](arg, function(err, reply) {
       if (err) {
+        console.log('there was an error while calling doUserReq')
         if (count > 2) return cb(err, null); // give up if cycling
-        if (!/Authorization Error/.test(err) && !/no cookie/.test(err)) return cb(err);
+        if (!/no cookie/.test(err) && !/Authorization Error/.test(err)) return cb(err);
 
+        console.log('i think i can handle this error =v');
+        console.log(err);
         // if there is an authentication problem, try logging in
         self.login(function(err) {
           if (err) return cb(err, null);

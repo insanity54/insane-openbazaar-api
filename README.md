@@ -6,7 +6,7 @@ Openbazaar API client. It's just a curl wrapper. WARNING: Incomplete implementat
 
 ## Installation
 
-
+  
 
 ## Usage
 

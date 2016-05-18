@@ -31,6 +31,9 @@
     "mocha": "^2.4.5"
   },
   "dependencies": {
+    "htmlparser": "^1.7.7",
+    "node-curl": "^0.3.3",
+    "superagent": "^1.8.3",
     "underscore": "1.8.3"
   }
 }

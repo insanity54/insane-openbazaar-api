@@ -5,6 +5,7 @@ var path = require('path');
 var _ = require('underscore');
 
 
+
 // only run drakov from inside this modules if the environment is TRAVIS-CI.
 // I do this because the output of drakov is messy.
 // For local development, I much prefer to run drakov in a separate terminal
@@ -22,6 +23,7 @@ var ob;
 var obb;
 
 describe('api', function() {
+  this.timeout(5000);
 
   if (process.env.TRAVIS) {
     before(function(done) {
@@ -67,9 +69,13 @@ describe('api', function() {
 
     beforeEach(function(done) {
       var apiOptions = {
-        "password": 'test',
-        "username": 'test',
-        "port": 3000
+        // "password": 'test',
+        // "username": 'test',
+        // "port": 3000,
+        "port": process.env.OB_PORT,
+        "host": process.env.OB_HOST,
+        "username": process.env.OB_USERNAME,
+        "password": process.env.OB_PASSWORD
       };
 
       var badOptions = _.extend({}, apiOptions, {
@@ -112,13 +118,14 @@ describe('api', function() {
         });
       });
 
-      it('should NOT create a header.txt file containing cookie', function(done) {
+      it('should NOT create a headers.txt file containing cookie', function(done) {
+        // 'headers.txt exists. Are you using an old version of insane-openbazaar-api? please update!'
         ob.login(function(err) {
           assert.isNull(err);
           assert.throws(
             (function() {
-              fs.readFileSync(path.join(__dirname, '..', 'headers.txt'), {'encoding': 'utf8'})
-            }));
+              fs.accessSync(path.join(__dirname, '..', 'headers.txt'))
+            }), /ENOENT/);
           done();
         });
       });
@@ -148,6 +155,7 @@ describe('api', function() {
       it('should get a profile', function(done) {
         ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
           assert.isNull(err);
+          //console.log(reply);
           assert.isObject(reply);
           assert.match(reply.profile.website, /openbazaar\.org/);
           done();
@@ -182,6 +190,7 @@ describe('api', function() {
           ob.profile(function(err, prof) {
             assert.isNull(err);
             assert.isObject(prof);
+            //console.log(prof);
             assert.isString(prof.profile.short_description, 'did not see your store description. do you have one set in your openbazaar profile?');
             //console.log('        '+prof.profile.short_description);
             done();
