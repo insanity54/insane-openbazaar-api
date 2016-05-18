@@ -24,7 +24,8 @@ var Api = function Api(options) {
   //       so a user can create multiple instances of insane-openbazaar-api
   //       and have each instance connect to a different OpenBazaar-Server
   //       and carry out authentication in isolation
-  self.cookieFile = path.join(__dirname, 'headers.txt');
+  //self.cookieFile = path.join(__dirname, 'headers.txt');
+  self.cookieString = '';
 
   self.defaultOpts = {
     "host": "127.0.0.1",
@@ -61,7 +62,7 @@ Api.prototype.login = function login(cb) {
     '--trace', 'trace.txt', //@todo #todo remove
     '--data',
     'username='+self.opts.username+'&'+'password='+self.opts.password,
-    '--dump-header', 'headers.txt',
+    '--dump-header', '-', // dump headers to stdout
     url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login')
   ], {
     'cwd': __dirname
@@ -85,9 +86,7 @@ Api.prototype.profile = function profile(guid, cb) {
     guid = '';
   }
 
-  // make sure we have auth cookie required to receive data from OpenBazaar-Server
-  try { fs.accessSync(self.cookieFile) }
-  catch(e) { return cb(new Error('no cookie exists! (there is no headers.txt)'), null) }
+  if (!self.cookieString) return cb(new Error('no cookie exists in memory!'));
 
   var endpoint;
   if (guid) {
@@ -106,7 +105,7 @@ Api.prototype.profile = function profile(guid, cb) {
 
   var curlProfile = spawn('curl', [
     '-L', // follow redirects
-    '-b', 'headers.txt', // get cookie from header file
+    '-b', self.cookieString, // get cookie from memory
     '--trace', 'trace.txt', //@todo #todo remove
     u
   ], {

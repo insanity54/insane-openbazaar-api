@@ -79,9 +79,9 @@ describe('api', function() {
       ob = new OpenBazaarAPI(apiOptions);
       obb = new OpenBazaarAPI(badOptions);
 
-      // delete header file which contains auth cookie
-      try { fs.unlinkSync(path.join(__dirname, '..', 'headers.txt')) }
-      catch(e) { assert.equal(e.code, 'ENOENT', 'I cant handle this error') }
+      // delete header file which contains auth cookie @todo delete
+      // try { fs.unlinkSync(path.join(__dirname, '..', 'headers.txt')) }
+      // catch(e) { assert.equal(e.code, 'ENOENT', 'I cant handle this error') }
       done();
     });
 
@@ -112,12 +112,21 @@ describe('api', function() {
         });
       });
 
-      it('should create a header.txt file containing cookie', function(done) {
+      it('should NOT create a header.txt file containing cookie', function(done) {
         ob.login(function(err) {
           assert.isNull(err);
-          var h = fs.readFileSync(path.join(__dirname, '..', 'headers.txt'), {'encoding': 'utf8'});
-          assert.isString(h);
-          assert.match(h, /Set-Cookie:/, 'Set-Cookie not found in header file. This can happen if your username/password combo is wrong.');
+          assert.throws(
+            (function() {
+              fs.readFileSync(path.join(__dirname, '..', 'headers.txt'), {'encoding': 'utf8'})
+            }));
+          done();
+        });
+      });
+
+      it('should store authentication cookie in memory', function(done) {
+        ob.login(function(err) {
+          assert.isNull(err);
+          assert.match(ob.cookieString, /[a-f0-9]{32}/);
           done();
         });
       });
