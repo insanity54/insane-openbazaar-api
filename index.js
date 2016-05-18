@@ -95,7 +95,7 @@ Api.prototype.profile = function profile(guid, cb) {
     guid = '';
   }
 
-  if (!self.cookieString) return cb(new Error('no cookie exists in memory!'));
+  if (!self.cookieString) return cb(new Error('no cookie exists in memory!'), null);
 
   var endpoint;
   if (guid) {
@@ -126,7 +126,7 @@ Api.prototype.profile = function profile(guid, cb) {
         if (typeof res.body === 'undefined') return cb(new Error('no body received in request'), null);
         if (typeof res.body.profile === 'undefined') return cb(new Error('no profile received in request'), null);
         if (/Authorization Error/.test(res)) return cb(new Error('Authorization Error'), null);
-        return cb(null, res);
+        return cb(null, res.body);
       }
     });
 }
@@ -154,12 +154,9 @@ Api.prototype.get = function get(item, arg, cb) {
     count += 1;
     self[self.implements.getters[i]](arg, function(err, reply) {
       if (err) {
-        console.log('there was an error while calling doUserReq')
         if (count > 2) return cb(err, null); // give up if cycling
-        if (!/no cookie/.test(err) && !/Authorization Error/.test(err)) return cb(err);
+        if (!/no cookie/.test(err) && !/Authorization Error/.test(err)) return cb(err, null);
 
-        console.log('i think i can handle this error =v');
-        console.log(err);
         // if there is an authentication problem, try logging in
         self.login(function(err) {
           if (err) return cb(err, null);
