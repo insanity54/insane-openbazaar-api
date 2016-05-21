@@ -59,11 +59,6 @@ ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, repl
 * [x] /api/v1/profile
 
 
-## Notes
-
-
-The OpenBazaar-Server API is defined as [API blueprint](https://apiblueprint.org) format
-
 
 
 
