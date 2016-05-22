@@ -116,3 +116,32 @@ ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, repl
 
 * [ ] implement full [API](https://github.com/OpenBazaar/OpenBazaar-Server/blob/master/api/restapi.py)
   * Note: this is kind of a pipe dream. I, [insanity54](https://github.com/insanity54), do not plan on creating a full implementation. I only plan on implementing specific endpoints that I need for my own projects. If you want to see a specific endpoint implemented, feel free to open an issue for it. If it's an endpoint I plan on implementing, I just might write it in. Otherwise, feel free to contribute if you want to see something I'm not planning on doing myself.
+
+
+## Development Notes
+
+(Because I forget!)
+
+I'm using node [foreman](https://www.npm.js/package/foreman) to set environment variables. I keep a `.env` file with environment variables; it is ignored by git and not in this repository.
+
+I'm using [Drakov](https://www.npmjs.com/package/drakov) in testing to mock OpenBazaar-Server API responses. API mocks are defined in `spec.md` and use the [API Blueprint](https://apiblueprint.org/) format.
+
+I wrote the tests to be flexible with server mocking. I test two different ways. One is running Drakov in the foreground.
+
+Drakov runs in the foreground in a second terminal--
+
+    drakov -f ./spec.md -p 3000 --watch
+
+And in my main terminal, I run `nf mocha`
+
+I do this while I develop locally so I can see that Drakov is responding to the API queries as expected during the mocha tests.
+
+I can also test against a live openbazaar server, by these environment variables in `.env`
+
+    OB_USERNAME=chris_grimmett
+    OB_PASSWORD=rosebud
+    OB_HOST=192.168.1.24
+    OB_PORT=18469
+    #OB_LIVE_TEST=1
+
+The OB_LIVE_TEST is what tells the mocha test to run against a live OpenBazaar server. I just comment or uncomment that line depending on what type of test I want to run.
