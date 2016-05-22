@@ -3,7 +3,7 @@ var OpenBazaarAPI = require('../index');
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-
+var semver = require('semver');
 
 
 // only run drakov from inside this modules if the environment is TRAVIS-CI.
@@ -136,7 +136,12 @@ describe('api', function() {
           assert.isNull(err);
           assert.throws(
             (function() {
-              fs.accessSync(path.join(__dirname, '..', 'headers.txt'))
+              // node versions 0.10 and below do not have fs.accessSync()
+              if (semver.satisfies(process.versions.node, '0.6 - 0.10')) {
+                fs.existsSync(path.join(__dirname, '..', 'headers.txt'))
+              } else {
+                fs.accessSync(path.join(__dirname, '..', 'headers.txt'))
+              }
             }), /ENOENT/);
           done();
         });
