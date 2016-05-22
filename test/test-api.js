@@ -138,9 +138,9 @@ describe('api', function() {
             (function() {
               // node versions 0.10 and below do not have fs.accessSync()
               if (semver.satisfies(process.versions.node, '0.6 - 0.10')) {
-                fs.existsSync(path.join(__dirname, '..', 'headers.txt'))
+                if (!fs.existsSync(path.join(__dirname, '..', 'headers.txt'))) throw new Error('ENOENT');
               } else {
-                fs.accessSync(path.join(__dirname, '..', 'headers.txt'))
+                fs.accessSync(path.join(__dirname, '..', 'headers.txt'));
               }
             }), /ENOENT/);
           done();
