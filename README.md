@@ -145,3 +145,5 @@ I can also test against a live openbazaar server, by these environment variables
     #OB_LIVE_TEST=1
 
 The OB_LIVE_TEST is what tells the mocha test to run against a live OpenBazaar server. I just comment or uncomment that line depending on what type of test I want to run.
+
+When Travic-CI runs the test, `TRAVIS` is set in the environment. Mocha sees this environment variable, and calls Drakov from within the test.
