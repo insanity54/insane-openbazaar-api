@@ -116,7 +116,7 @@ ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, repl
 ## Roadmap
 
 * [ ] implement full [API](https://github.com/OpenBazaar/OpenBazaar-Server/blob/master/api/restapi.py)
-  * Note: this is kind of a pipe dream. I, [insanity54](https://github.com/insanity54), do not plan on creating a full implementation. I only plan on implementing specific endpoints that I need for my own projects. If you want to see a specific endpoint implemented, feel free to open an issue for it. If it's an endpoint I plan on implementing, I just might write it in. Otherwise, contribute if you want to see something I'm not planning on doing myself.
+  * Note: this is kind of a pipe dream. I, [insanity54](https://github.com/insanity54), do not plan on creating a full implementation. I only plan on implementing specific endpoints that I need for my own projects. If you want to see a specific endpoint implemented, feel free to open an issue for it. If it's an endpoint I plan on implementing, I just might write it in. Otherwise, feel free to contribute if you want to see something I'm not planning on doing myself.
 * [x] ~~instead of having curl write the headers file to `headers.txt`, use child_process to send said headers to memory.
       save the headers in `ob.headers` so multiple instances of insane-openbazaar-api class can be running and connected
       to separate OpenBazaar-Servers.~~ headers being saved via superagent
