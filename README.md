@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/insanity54/insane-openbazaar-api.svg?branch=master)](https://travis-ci.org/insanity54/insane-openbazaar-api)
 
-OpenBazaar API client for Node. WARNING: Incomplete implementation!!
+Openbazaar API client for Nodejs. WARNING: Incomplete implementation!!
+>>>>>>> 74c2b5c51fd57084dbdc0f593b50ea39d8971806
 
 ## Installation
 
