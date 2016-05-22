@@ -19,19 +19,21 @@ var Api = function Api(options) {
   var self = this;
   self.implements = {
     "getters": [
-      'profile'
+      'profile',
+      'get_sales'
     ],
     "setters": [
       'login'
     ]
   };
 
-  // https://github.com/insanity54/insane-openbazaar-api/issues/1
-  // @todo cookieFile contents should really be in-memory
-  //       so a user can create multiple instances of insane-openbazaar-api
-  //       and have each instance connect to a different OpenBazaar-Server
-  //       and carry out authentication in isolation
-  //self.cookieFile = path.join(__dirname, 'headers.txt');
+  self.buildURL = function buildURL(endpoint) {
+    return url.resolve(
+      self.opts.proto+'://'+self.opts.host+':'+self.opts.port,
+      endpoint
+    );
+  }
+
   self.cookieString = '';
 
   self.defaultOpts = {
@@ -66,7 +68,7 @@ Api.prototype.login = function login(cb) {
   var self = this;
 
   var req = request
-    .post(url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port, '/api/v1/login'))
+    .post(self.buildURL('/api/v1/login'))
     .send({ username: self.opts.username, password: self.opts.password })
     .set('Content-Type', 'application/x-www-form-urlencoded')
     .set('Accept', 'application/json')
@@ -108,53 +110,88 @@ Api.prototype.profile = function profile(guid, cb) {
   else
     endpoint = '/api/v1/profile';
 
-  var u = url.resolve(self.opts.proto+'://'+self.opts.host+':'+self.opts.port,
-      endpoint);
-
   //console.log('sending cookie--' + self.cookieString)
   var req = request
-    .get(u)
+    .get(self.buildURL(endpoint))
     .set('Cookie', self.cookieString)
     .end(function(err, res) {
-      //console.log('response to profile is =v')
-      //console.log(res);
-      if (err || !res.ok) {
-        console.log(err);
-        return cb(new Error(err));
-      } else {
-        if (res.statusCode !== 200) {
-          console.log('status code was not 200');
-          return cb(new Error('Cannot GET'), null);
-        }
-        if (typeof res === 'undefined') {
-          console.log('res was undefined');
-          return cb(new Error('no data received from request'), null);
-        }
-        if (typeof res.body === 'undefined') {
-          console.log('res.body was undef');
-          return cb(new Error('no body received in request'), null);
-        }
+      self.getHandler.call(self, err, res, function(err, res) {
+        if (err) return cb(err, null);
         if (typeof res.body.profile === 'undefined') {
           console.log('res.body.profile was undef');
           return cb(new Error('no profile received in request'), null);
         }
-        if (/Authorization Error/.test(res)) {
-          console.log('res auth error')
-          return cb(new Error('Authorization Error'), null);
-        }
         return cb(null, res.body);
-      }
+      });
     });
 }
+
+
+/**
+ * getHandler
+ *
+ * a common GET request handler
+ * I'm imitating the express/connect middleware concept here.
+ * the common GET handler is called
+ * followed by unique handlers
+ */
+Api.prototype.getHandler = function getHandler(err, res, cb) {
+  if (err || !res.ok) {
+    return cb(err, null);
+  } else {
+    if (res.statusCode !== 200) {
+      console.log('status code was not 200');
+      return cb(new Error('Cannot GET'), null);
+    }
+    if (typeof res === 'undefined') {
+      console.log('res was undefined');
+      return cb(new Error('no data received from request'), null);
+    }
+    if (typeof res.body === 'undefined') {
+      console.log('res.body was undef');
+      return cb(new Error('no body received in request'), null);
+    }
+    if (/Authorization Error/.test(res)) {
+      console.log('res auth error')
+      return cb(new Error('Authorization Error'), null);
+    }
+    return cb(null, res);
+  }
+}
+
+
+Api.prototype.get_sales = function get_sales(cb) {
+  var self = this;
+  endpoint = '/api/v1/get_sales';
+  if (!self.cookieString) return cb(new Error('no cookie exists in memory!'), null);
+  var req = request
+    .get(self.buildURL(endpoint))
+    .set('Cookie', self.cookieString)
+    .end(function(err, res) {
+      // the common GET handler is called
+      // followed by unique handlers
+      self.getHandler.call(self, err, res, function(err, res) {
+        if (err) return cb(err, null);
+        return cb(null, res.body);
+      });
+    });
+}
+
+
+
 
 
 
 Api.prototype.get = function get(item, arg, cb) {
   var self = this;
 
-  if (typeof cb !== 'function') throw new Error('check your code. get() needs third param a callback');
-  if (typeof arg === 'undefined') throw new Error('check your code. get() needs second param an argument');
+  //if (typeof cb !== 'function') throw new Error('check your code. get() needs third param a callback');
+  if (typeof arg === 'undefined') throw new Error('check your code. get() needs second param an argument or a callback');
   if (typeof item !== 'string') throw new Error('check your code. get() needs first param a string');
+  if (typeof cb === 'undefined') {
+    cb = arg;
+    arg = '';
+  }
 
 
   var i = _.indexOf(self.implements.getters, item.toLowerCase())
@@ -167,10 +204,11 @@ Api.prototype.get = function get(item, arg, cb) {
   // so attempt a login.
   // then try the thing the user wants again. do this up to 3 times.
   function doUserRequest(cb) {
-    count += 1;
-    self[self.implements.getters[i]](arg, function(err, reply) {
+
+    var onDone = function(err, reply) {
       if (err) {
         if (count > 2) return cb(err, null); // give up if cycling
+        // return error if it's an error we can't handle
         if (!/no cookie/.test(err) && !/Authorization Error/.test(err)) return cb(err, null);
 
         // if there is an authentication problem, try logging in
@@ -182,7 +220,13 @@ Api.prototype.get = function get(item, arg, cb) {
       else
         // there was no error
         return cb(null, reply);
-    });
+    }
+
+    count += 1;
+    var args = [];
+    if (arg) args.push(arg);
+    args.push(onDone);
+    self[self.implements.getters[i]].apply(self, args);
   }
 
   doUserRequest(function(err, res) {

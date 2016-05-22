@@ -19,6 +19,7 @@ if (process.env.TRAVIS) {
   };
 }
 
+
 var ob;
 var obb;
 
@@ -72,11 +73,22 @@ describe('api', function() {
         "password": 'test',
         "username": 'test',
         "port": 3000,
+
         // "port": process.env.OB_PORT,
         // "host": process.env.OB_HOST,
         // "username": process.env.OB_USERNAME,
         // "password": process.env.OB_PASSWORD
       };
+
+      // Easy way to test against a live OpenBazaar-Server instead of Drakov
+      if (process.env.OB_LIVE_TEST) {
+        apiOptions = {
+          "port": process.env.OB_PORT,
+          "host": process.env.OB_HOST,
+          "username": process.env.OB_USERNAME,
+          "password": process.env.OB_PASSWORD
+        }
+      }
 
       var badOptions = _.extend({}, apiOptions, {
         "host": "example.com"
@@ -226,6 +238,32 @@ describe('api', function() {
         });
       });
 
+    });
+
+    describe('get_sales', function() {
+      describe('directly called', function() {
+        it('should get an array of sales', function(done) {
+          ob.login(function(err, sales) {
+            assert.isNull(err);
+            ob.get_sales(function(err, sales) {
+              assert.isNull(err);
+              assert.isArray(sales);
+              done();
+            });
+          });
+        });
+
+      });
+
+      describe('called via get method', function() {
+        it('should get an array of sales', function(done) {
+          ob.get('get_sales', function(err, sales) {
+            assert.isNull(err);
+            assert.isArray(sales);
+            done();
+          });
+        });
+      });
     });
   });
 });
