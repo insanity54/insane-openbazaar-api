@@ -19,9 +19,9 @@
     "api"
   ],
   "author": "Chris Grimmett <chris@grimtech.net>",
-  "license":
-  { "type" : "Public Domain",
-    "url" : "http://github.com/insanity54/insane-openbazaar-api/raw/master/UNLICENSE"
+  "license": {
+    "type": "Public Domain",
+    "url": "http://github.com/insanity54/insane-openbazaar-api/raw/master/UNLICENSE"
   },
   "bugs": {
     "url": "https://github.com/insanity54/insane-openbazaar-api/issues"
@@ -31,7 +31,8 @@
     "chai": "^3.5.0",
     "drakov": "^1.0.0",
     "foreman": "^1.4.1",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "semver": "^5.1.0"
   },
   "dependencies": {
     "superagent": "^1.8.3",
