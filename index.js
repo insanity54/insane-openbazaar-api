@@ -91,11 +91,15 @@ Api.prototype.login = function login(cb) {
 
 Api.prototype.profile = function profile(guid, cb) {
   var self = this;
+
   if (typeof guid === 'undefined' && typeof cb === 'undefined') throw new Error('no arguments received! minimum is 1');
   if (typeof cb === 'undefined' && typeof guid === 'function') {
     cb = guid;
     guid = '';
   }
+  if (typeof cb !== 'function') throw new Error('callback function not received! cb='+cb);
+
+
 
   if (!self.cookieString) return cb(new Error('no cookie exists in memory!'), null);
 
@@ -137,23 +141,27 @@ Api.prototype.profile = function profile(guid, cb) {
  */
 Api.prototype.getHandler = function getHandler(err, res, cb) {
   if (err || !res.ok) {
+    if (/Authorization Error/.test(err)) {
+      //console.log('res auth error')
+      return cb(new Error('Authorization Error'), null);
+    }
+    if (/Unauthorized/.test(err)) {
+      //console.log('unauthorized error');
+      return cb(new Error('Authorization Error'), null);
+    }
     return cb(err, null);
   } else {
     if (res.statusCode !== 200) {
-      console.log('status code was not 200');
+      //console.log('status code was not 200');
       return cb(new Error('Cannot GET'), null);
     }
     if (typeof res === 'undefined') {
-      console.log('res was undefined');
+      //console.log('res was undefined');
       return cb(new Error('no data received from request'), null);
     }
     if (typeof res.body === 'undefined') {
-      console.log('res.body was undef');
+      //console.log('res.body was undef');
       return cb(new Error('no body received in request'), null);
-    }
-    if (/Authorization Error/.test(res)) {
-      console.log('res auth error')
-      return cb(new Error('Authorization Error'), null);
     }
     return cb(null, res);
   }
@@ -207,6 +215,7 @@ Api.prototype.get = function get(item, arg, cb) {
 
     var onDone = function(err, reply) {
       if (err) {
+        //console.log(err);
         if (count > 2) return cb(err, null); // give up if cycling
         // return error if it's an error we can't handle
         if (!/no cookie/.test(err) && !/Authorization Error/.test(err)) return cb(err, null);
@@ -226,6 +235,7 @@ Api.prototype.get = function get(item, arg, cb) {
     var args = [];
     if (arg) args.push(arg);
     args.push(onDone);
+    //console.dir(args);
     self[self.implements.getters[i]].apply(self, args);
   }
 
