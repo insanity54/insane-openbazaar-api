@@ -24,7 +24,7 @@ var ob;
 var obb;
 
 describe('api', function() {
-  this.timeout(5000);
+  this.timeout(1000 * 10);
 
   if (process.env.TRAVIS) {
     before(function(done) {
@@ -157,6 +157,7 @@ describe('api', function() {
     });
 
     describe('get', function() {
+
       it('should bork if receiving no args', function() {
         assert.throws(ob.get);
       });
@@ -180,7 +181,20 @@ describe('api', function() {
       });
 
       it('should log in, if not already logged in', function(done) {
+        assert.equal(ob.cookieString, '');
         ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
+          //console.log(ob.cookieString);
+          assert.isNull(err);
+          assert.isObject(reply);
+          assert.match(reply.profile.website, /openbazaar\.org/);
+          done();
+        });
+      });
+
+      it('should log in again if the existing cookieString is expired', function(done) {
+        ob.cookieString = 'TWISTED_SESSION=beefbeefdeadbeefdeadbeefbeeff666';
+        ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
+          //console.log(reply);
           assert.isNull(err);
           assert.isObject(reply);
           assert.match(reply.profile.website, /openbazaar\.org/);
@@ -204,12 +218,12 @@ describe('api', function() {
         });
 
         it('should accept one param, a callback. Then callback with profile object', function(done) {
+          // this will fail if running against a live OpenBazaar-Server server that is not serving a store
           ob.profile(function(err, prof) {
-            assert.isNull(err);
+            assert.match(err, /no profile received in request/)
+            assert.isNull(err, 'Did not see your store profile. is this OpenBazaar-Server instance hosting a store?');
             assert.isObject(prof);
-            //console.log(prof);
-            assert.isString(prof.profile.short_description, 'did not see your store description. do you have one set in your openbazaar profile?');
-            //console.log('        '+prof.profile.short_description);
+            assert.isString(prof.profile.short_description);
             done();
           });
         });
