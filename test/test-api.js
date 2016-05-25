@@ -220,7 +220,6 @@ describe('api', function() {
         it('should accept one param, a callback. Then callback with profile object', function(done) {
           // this will fail if running against a live OpenBazaar-Server server that is not serving a store
           ob.profile(function(err, prof) {
-            assert.match(err, /no profile received in request/)
             assert.isNull(err, 'Did not see your store profile. is this OpenBazaar-Server instance hosting a store?');
             assert.isObject(prof);
             assert.isString(prof.profile.short_description);
