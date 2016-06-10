@@ -4,6 +4,22 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var semver = require('semver');
+var debug = require('debug')('insane-openbazaar-api');
+
+
+debug('OB_HOST=%s\nOB_PASSWORD=%s\nOB_USERNAME=%s\nOB_PROTO=%s\n\
+OB_PORT=%s\nOB_LIVE_TEST=%s\nDEBUG=%s',
+process.env.OB_HOST,
+process.env.OB_PASSWORD,
+process.env.OB_USERNAME,
+process.env.OB_PROTO,
+process.env.OB_PORT,
+process.env.OB_LIVE_TEST,
+process.env.DEBUG);
+
+
+const guidRegEx = /[a-f0-9]{40}/;
+
 
 
 // only run drakov from inside this modules if the environment is TRAVIS-CI.
@@ -24,7 +40,6 @@ var ob;
 var obb;
 
 describe('api', function() {
-  this.timeout(1000 * 10);
 
   if (process.env.TRAVIS) {
     before(function(done) {
@@ -56,6 +71,15 @@ describe('api', function() {
       assert.throws((function() {new OpenBazaarAPI(invalidApiOptions) }), /either http or https/);
     });
 
+    it('should be OK with using HTTPS', function() {
+      var sslApiOptions = {
+        "proto": "https",
+        "username": "test",
+        "password": "test"
+      };
+      assert.doesNotThrow((function() {new OpenBazaarAPI(sslApiOptions) }));
+    });
+
   });
 
 
@@ -69,17 +93,7 @@ describe('api', function() {
   describe('controllers', function() {
 
     beforeEach(function(done) {
-      var apiOptions = {
-        "password": 'test',
-        "username": 'test',
-        "port": 3000,
-
-        // "port": process.env.OB_PORT,
-        // "host": process.env.OB_HOST,
-        // "username": process.env.OB_USERNAME,
-        // "password": process.env.OB_PASSWORD
-      };
-
+      var apiOptions = {};
       // Easy way to test against a live OpenBazaar-Server instead of Drakov
       if (process.env.OB_LIVE_TEST) {
         apiOptions = {
@@ -88,6 +102,13 @@ describe('api', function() {
           "username": process.env.OB_USERNAME,
           "password": process.env.OB_PASSWORD
         }
+      }
+      else {
+        apiOptions = {
+          "password": 'test',
+          "username": 'test',
+          "port": 3000,
+        };
       }
 
       var badOptions = _.extend({}, apiOptions, {
@@ -102,6 +123,8 @@ describe('api', function() {
       // catch(e) { assert.equal(e.code, 'ENOENT', 'I cant handle this error') }
       done();
     });
+
+
 
     describe('isValidGUID', function() {
       it('should return false for guid of invalid length', function() {
@@ -121,42 +144,10 @@ describe('api', function() {
       });
     });
 
-    describe('login', function() {
 
-      it('should log in to the openbazaar server', function(done) {
-        ob.login(function(err) {
-          assert.isNull(err);
-          done();
-        });
-      });
 
-      it('should NOT create a headers.txt file containing cookie', function(done) {
-        // 'headers.txt exists. Are you using an old version of insane-openbazaar-api? please update!'
-        ob.login(function(err) {
-          assert.isNull(err);
-          assert.throws(
-            (function() {
-              // node versions 0.10 and below do not have fs.accessSync()
-              if (semver.satisfies(process.versions.node, '0.6 - 0.10')) {
-                if (!fs.existsSync(path.join(__dirname, '..', 'headers.txt'))) throw new Error('ENOENT');
-              } else {
-                fs.accessSync(path.join(__dirname, '..', 'headers.txt'));
-              }
-            }), /ENOENT/);
-          done();
-        });
-      });
-
-      it('should store authentication cookie in memory', function(done) {
-        ob.login(function(err) {
-          assert.isNull(err);
-          assert.match(ob.cookieString, /[a-f0-9]{32}/);
-          done();
-        });
-      });
-    });
-
-    describe('get', function() {
+    // Notes about get() https://github.com/insanity54/insane-openbazaar-api/issues/3
+    xdescribe('get', function() {
 
       it('should bork if receiving no args', function() {
         assert.throws(ob.get);
@@ -203,82 +194,582 @@ describe('api', function() {
       });
     });
 
-    describe('profile', function() {
 
-      describe('logged in', function() {
-        beforeEach(function(done) {
-          ob.login(function(err) {
-            assert.isNull(err);
-            done();
-          });
-        });
-
-        it('should bork if receiving no args', function() {
-          assert.throws(ob.profile, /no arguments/);
-        });
-
-        it('should accept one param, a callback. Then callback with profile object', function(done) {
-          // this will fail if running against a live OpenBazaar-Server server that is not serving a store
-          ob.profile(function(err, prof) {
-            assert.isNull(err, 'Did not see your store profile. is this OpenBazaar-Server instance hosting a store?');
-            assert.isObject(prof);
-            assert.isString(prof.profile.short_description);
-            done();
-          });
-        });
-
-        it('should accept two params, a GUID and a callback. Then callback with profile object', function(done) {
-          ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
-            assert.isNull(err);
-            assert.isObject(reply);
-            assert.match(reply.profile.website, /openbazaar\.org/);
-            done();
-          });
-        });
-
-        it('should bork if receiving an invalid GUID', function(done) {
-          ob.profile('asdfasfa44t4fa89398', function(err, reply) {
-            assert.match(err, /invalid GUID/);
-            assert.isNull(reply);
-            done();
-          });
+    describe('API', function() {
+      beforeEach(function(done) {
+        ob.login({
+          username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
+          password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
+        }, function(err, code, body) {
+          debug('beforeeach callback!!!! good sign')
+          assert.isNull(err);
+          assert.equal(200, code);
+          assert.isDefined(body);
+          done();
         });
       });
 
-      describe('not logged in', function() {
+      describe('GET requests', function() {
+        this.timeout(process.env.OB_LIVE_TEST ? (1000 * 10) : (1000 * 1));
 
-        it('should bork if there is no authentication cookie available', function(done) {
-          ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
-            assert.match(err, /no cookie/);
-            assert.isNull(reply);
-            done();
-          });
-        });
-      });
-
-    });
-
-    describe('get_sales', function() {
-      describe('directly called', function() {
-        it('should get an array of sales', function(done) {
-          ob.login(function(err, sales) {
-            assert.isNull(err);
-            ob.get_sales(function(err, sales) {
+        describe('get_image', function() {
+          it('should return an array of images', function(done) {
+            ob.get_image(function(err, images) {
               assert.isNull(err);
-              assert.isArray(sales);
+              assert.isDefined(images);
+              assert.isArray(images);
               done();
             });
           });
         });
+        describe('profile', function() {
 
+          xit('should bork if there is no authentication cookie available', function(done) {
+            ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
+              assert.match(err, /no cookie/);
+              assert.isNull(reply);
+              done();
+            });
+          });
+
+          it('should bork if receiving no args', function() {
+            assert.throws(ob.profile, /no arguments/);
+          });
+
+          it('should accept one param, a callback. Then callback with profile object', function(done) {
+            // this will fail if running against a live OpenBazaar-Server server that is not serving a store
+            ob.profile(function(err, prof) {
+              assert.isNull(err, 'Did not see your store profile. is this OpenBazaar-Server instance hosting a store?');
+              assert.isObject(prof);
+              assert.isString(prof.profile.short_description);
+              done();
+            });
+          });
+
+          it('should accept two params, a GUID and a callback. Then callback with profile object', function(done) {
+            ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
+              assert.isNull(err);
+              assert.isObject(reply);
+              assert.match(reply.profile.website, /openbazaar\.org/);
+              done();
+            });
+          });
+
+          it('should bork if receiving an invalid GUID', function(done) {
+            ob.profile('asdfasfa44t4fa89398', function(err, reply) {
+              assert.match(err, /invalid GUID/);
+              assert.isNull(reply);
+              done();
+            });
+          });
+        });
+        describe('get_listings', function() {
+          it('should callback with array of listings', function(done) {
+            ob.get_listings(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('get_followers', function() {
+          it('should callback with array of followers', function(done) {
+            ob.get_followers(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('get_settings', function() {
+          it('should callback with settings json', function(done) {
+            ob.get_settings(function(err, code, body) {
+              debug('callback! err=%s, code=%s, body=%s', err, code, body);
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isObject(body);
+              assert.isString(body.currency_code);
+              done();
+            });
+          });
+        });
+        describe('get_notifications', function() {
+          it('should callback with notification object', function(done) {
+            ob.get_notifications(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isObject(body);
+              assert.isNumber(body.unread);
+              assert.isArray(body.notifications);
+              console.log(body);
+              done();
+            });
+          });
+        });
+        describe('get_chat_messages', function() {
+          it('should callback with array of chats', function(done) {
+            ob.get_chat_messages({'guid': 'd47eea06209d3da8dc10937399a9cf1c3dd4dca4'}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isArray(body);
+              assert.isString(body[0].guid);
+              assert.match(body[0].guid, guidRegEx);
+              done();
+            });
+          });
+
+          it('should bork if not receiving guid parameter', function(done) {
+            ob.get_chat_messages(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
+              done();
+            });
+          });
+        });
+        describe('get_chat_conversations', function() {
+          it('should callback with array of conversations', function(done) {
+            ob.get_chat_conversations(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              console.log(body)
+              done();
+            });
+          });
+        });
+        describe('contracts', function() {
+          it('should throw with message saying to use a get/set/delete prefix', function() {
+            assert.throws(
+              (function() {
+                ob.contracts(function(err, contracts) {});
+              }), /Please use/);
+          });
+        });
+        describe('get_contracts', function() {
+          it('should return with array of contracts', function(done) {
+            ob.get_contracts(function(err, code, contracts) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(contracts);
+              done();
+            });
+          });
+        });
+        describe('shutdown', function() {
+          it('should callback with ???', function(done) {
+            ob.get_followers(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isDefined(body);
+              done();
+            });
+          });
+        });
+        describe('get_sales', function() {
+          it('should get an array of sales', function(done) {
+            ob.login({
+              username: process.env.OB_USERNAME || 'test',
+              password: process.env.OB_PASSWORD || 'test'
+            }, function(err, sales) {
+              assert.isNull(err);
+              ob.get_sales(function(err, sales) {
+                assert.isNull(err);
+                assert.isArray(sales);
+                done();
+              });
+            });
+          });
+        });
+        describe('get_purchases', function() {
+          it('should callback with array of purchases', function(done) {
+            ob.get_purchases(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('connected_peers', function() {
+          it('should callback with array of peers', function(done) {
+            ob.connected_peers(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('routing_table', function() {
+          it('should callback with array of guids', function(done) {
+            ob.routing_table(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              assert.match(body[0].guid, guidRegEx);
+              done();
+            });
+          });
+        });
+        describe('get_order', function() {
+          it('should callback with order object', function(done) {
+            ob.get_order(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isObject(body);
+              done();
+            });
+          });
+        });
+        describe('get_cases', function() {
+          it('should callback with array of cases', function(done) {
+            ob.get_cases(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('order_messages', function() {
+          it('should callback with array of messages', function(done) {
+            ob.order_messages(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('get_ratings', function() {
+          it('should callback with array of ratings', function(done) {
+            ob.get_ratings(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('btc_price', function() {
+          it('should callback with object of btc pricing', function(done) {
+            ob.btc_price(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isObject(body);
+              done();
+            });
+          });
+        });
       });
 
-      describe('called via get method', function() {
-        it('should get an array of sales', function(done) {
-          ob.get('get_sales', function(err, sales) {
-            assert.isNull(err);
-            assert.isArray(sales);
-            done();
+      describe('POST requests', function() {
+        describe('login', function() {
+
+          it('should bork if not receiving username and password', function(done) {
+            assert.throws((function() {
+              ob.login(function(err, code, body) {});
+            }, /username and password/));
+          });
+
+          it('should log in to the openbazaar server', function(done) {
+            ob.login({
+              username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
+              password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
+            }, function(err, status, body) {
+              assert.isNull(err);
+              assert.equal(status, 200);
+              assert.isDefined(body);
+              done();
+            });
+          });
+
+          it('should NOT create a headers.txt file containing cookie', function(done) {
+            // 'headers.txt exists. Are you using an old version of insane-openbazaar-api? please update!'
+            ob.login({
+              username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
+              password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
+            }, function(err, status, body) {
+              assert.isNull(err);
+              assert.equal(status, 200);
+              assert.isDefined(body);
+              assert.throws(
+                (function() {
+                  // node versions 0.10 and below do not have fs.accessSync()
+                  if (semver.satisfies(process.versions.node, '0.6 - 0.10')) {
+                    if (!fs.existsSync(path.join(__dirname, '..', 'headers.txt'))) throw new Error('ENOENT');
+                  } else {
+                    fs.accessSync(path.join(__dirname, '..', 'headers.txt'));
+                  }
+                }), /ENOENT/);
+              done();
+            });
+          });
+
+          it('should store authentication cookie in memory', function(done) {
+            ob.login({
+              username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
+              password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
+            }, function(err, status, body) {
+              assert.isNull(err);
+              assert.equal(status, 200);
+              assert.isDefined(body);
+              assert.match(ob.cookieString, /[a-f0-9]{32}/);
+              done();
+            });
+          });
+        });
+        describe('follow', function() {
+          it('should callback ???', function(done) {
+            ob.follow(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('unfollow', function() {
+          it('should callback with ???', function(done) {
+            ob.unfollow(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('profile', function() {
+          it('should callback profile object', function(done) {
+            ob.profile(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isObject(body);
+              assert.isString(body.short_description);
+              done();
+            });
+          });
+        });
+        describe('social_accounts', function() {
+          it('should callback ???', function(done) {
+            ob.social_accounts(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('contracts', function() {
+          it('should callback ???', function(done) {
+            ob.contracts(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('make_moderator', function() {
+          it('should callback ???', function(done) {
+            ob.make_moderator(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('unmake_moderator', function() {
+          it('should callback ???', function(done) {
+            ob.unmake_moderator(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('purchase_contract', function() {
+          it('should callback ???', function(done) {
+            ob.purchase_contract(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('confirm_order', function() {
+          it('should callback ???', function(done) {
+            ob.confirm_order(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('upload_image', function() {
+          it('should callback ???', function(done) {
+            ob.upload_image(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('complete_order', function() {
+          it('should callback ???', function(done) {
+            ob.complete_order(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('settings', function() {
+          it('should throw, telling to use a get/set prefix', function() {
+            assert.throws(
+              (function() {
+                ob.settings(function(err, contracts) {});
+              }), /Please use/);
+          });
+        });
+        describe('mark_notification_as_read', function() {
+          it('should callback ???', function(done) {
+            ob.mark_notification_as_read(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('broadcast', function() {
+          it('should callback ???', function(done) {
+            ob.broadcast(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('mark_chat_message_as_read', function() {
+          it('should callback ???', function(done) {
+            ob.mark_chat_message_as_read(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('check_for_payment', function() {
+          it('should callback ???', function(done) {
+            ob.check_for_payment(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('dispute_contract', function() {
+          it('should callback ???', function(done) {
+            ob.dispute_contract(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('close_dispute', function() {
+          it('should callback ???', function(done) {
+            ob.close_dispute(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('release_funds', function() {
+          it('should callback ???', function(done) {
+            ob.release_funds(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('refund', function() {
+          it('should callback ???', function(done) {
+            ob.refund(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('mark_discussion_as_read', function() {
+          it('should callback ???', function(done) {
+            ob.mark_discussion_as_read(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+      });
+
+      describe('DELETE requests', function() {
+        describe('social_accounts', function() {
+          it('should throw, suggesting to use a get/set prefix', function() {
+            assert.throws(
+              (function() {
+                ob.social_accounts(function(err, code, accounts) {});
+              }), /Please use/);
+          });
+        });
+        describe('delete_social_accounts', function() {
+          it('should return ???', function(done) {
+            ob.delete_social_accounts(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isDefined(body);
+              done();
+            });
+          });
+        });
+        describe('delete_contracts', function() {
+          it('should callback ???', function(done) {
+            ob.delete_contracts(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
+          });
+        });
+        describe('chat_conversation', function() {
+          it('should callback ???', function(done) {
+            ob.delete_chat_conversation(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(200, code);
+              assert.isArray(body);
+              done();
+            });
           });
         });
       });
