@@ -201,7 +201,6 @@ describe('api', function() {
           username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
           password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
         }, function(err, code, body) {
-          debug('beforeeach callback!!!! good sign')
           assert.isNull(err);
           assert.equal(200, code);
           assert.isDefined(body);
@@ -370,16 +369,11 @@ describe('api', function() {
         });
         describe('get_sales', function() {
           it('should get an array of sales', function(done) {
-            ob.login({
-              username: process.env.OB_USERNAME || 'test',
-              password: process.env.OB_PASSWORD || 'test'
-            }, function(err, sales) {
+            ob.get_sales(function(err, code, body) {
               assert.isNull(err);
-              ob.get_sales(function(err, sales) {
-                assert.isNull(err);
-                assert.isArray(sales);
-                done();
-              });
+              assert.equal(code, 200);
+              assert.isArray(body);
+              done();
             });
           });
         });
@@ -387,7 +381,7 @@ describe('api', function() {
           it('should callback with array of purchases', function(done) {
             ob.get_purchases(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isArray(body);
               done();
             });
@@ -416,10 +410,27 @@ describe('api', function() {
         });
         describe('get_order', function() {
           it('should callback with order object', function(done) {
-            ob.get_order(function(err, code, body) {
+            ob.get_order({'order_id': '8da26ad7af510bc5e94c3f4314865c60578d18b6'}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
+              debug('err=%s, code=%s, body=%s', err, code, body)
               assert.isObject(body);
+              done();
+            });
+          });
+          // it('should callback with order object (send Array obj.order_id)', function(done) {
+          //   ob.get_order([{'order_id': '8da26ad7af510bc5e94c3f4314865c60578d18b6'}], function(err, code, body) {
+          //     assert.isNull(err);
+          //     assert.equal(code, 200);
+          //     assert.isObject(body);
+          //     done();
+          //   });
+          // });
+          it('should bork if not receiving order_id', function(done) {
+            ob.get_order(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
@@ -428,7 +439,7 @@ describe('api', function() {
           it('should callback with array of cases', function(done) {
             ob.get_cases(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isArray(body);
               done();
             });
@@ -436,30 +447,65 @@ describe('api', function() {
         });
         describe('order_messages', function() {
           it('should callback with array of messages', function(done) {
-            ob.order_messages(function(err, code, body) {
+            ob.order_messages({'order_id': '8da26ad7af510bc5e94c3f4314865c60578d18b6'}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isArray(body);
+              done();
+            });
+          });
+          it('should bork if not receiving args', function(done) {
+            ob.order_messages(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
         describe('get_ratings', function() {
-          it('should callback with array of ratings', function(done) {
+          it('should accept guid param and return an array of ratings objects', function(done) {
+            ob.get_ratings({'guid': 'd47eea06209d3da8dc10937399a9cf1c3dd4dca4'}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isArray(body);
+              done();
+            });
+          });
+          it('should accept guid param and contract_id and return an array of ratings objects', function(done) {
+            ob.get_ratings({'guid': 'd47eea06209d3da8dc10937399a9cf1c3dd4dca4'}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isArray(body);
+              done();
+            });
+          });
+          it('should accept no params and return an array of ratings objects', function(done) {
             ob.get_ratings(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isArray(body);
               done();
             });
           });
         });
         describe('btc_price', function() {
-          it('should callback with object of btc pricing', function(done) {
+          it('should accept no params and callback with currencyCodes object', function(done) {
             ob.btc_price(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isObject(body);
+              assert.isObject(body.currencyCodes);
+              done();
+            });
+          });
+          it('should accept currency param and callback with exchange rate and currency codes', function(done) {
+            ob.btc_price({'currency': 'BTC'}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isNumber(body.btcExchange);
+              assert.isObject(body.currencyCodes);
               done();
             });
           });
@@ -672,61 +718,117 @@ describe('api', function() {
           });
         });
         describe('check_for_payment', function() {
-          it('should callback ???', function(done) {
-            ob.check_for_payment(function(err, code, body) {
+          it('should callback with success', function(done) {
+            ob.check_for_payment({'order_id': '2006247e6d2d49c5d960dcaa1c0305e387577607'}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isDefined(body.success);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if not receiving order_id in params', function(done) {
+            ob.check_for_payment(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
         describe('dispute_contract', function() {
-          it('should callback ???', function(done) {
-            ob.dispute_contract(function(err, code, body) {
+          it('should callback with success', function(done) {
+            ob.dispute_contract({'order_id': '4d2a90ddb7ef5298bd8edfa627c18580914dfc85'}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork when not receiving params', function(done) {
+            ob.dispute_contract(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
         describe('close_dispute', function() {
-          it('should callback ???', function(done) {
-            ob.close_dispute(function(err, code, body) {
+          it('should callback with success', function(done) {
+            ob.close_dispute({'order_id': '4d2a90ddb7ef5298bd8edfa627c18580914dfc85'}, function(err, code, body) {
               assert.isNull(err);
               assert.equal(200, code);
-              assert.isArray(body);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if not receiving args', function(done) {
+            ob.close_dispute(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
         describe('release_funds', function() {
-          it('should callback ???', function(done) {
-            ob.release_funds(function(err, code, body) {
+          it('should callback with success', function(done) {
+            ob.release_funds({'order_id': '4d2a90ddb7ef5298bd8edfa627c18580914dfc85'}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if not receiving arguments', function(done) {
+            ob.release_funds(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
         describe('refund', function() {
-          it('should callback ???', function(done) {
-            ob.refund(function(err, code, body) {
+          it('should accept an order_id param and callback with success', function(done) {
+            ob.refund({'order_id': '4d2a90ddb7ef5298bd8edfa627c18580914dfc85'}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if not receiving params', function(done) {
+            ob.refund(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
         describe('mark_discussion_as_read', function() {
-          it('should callback ???', function(done) {
-            ob.mark_discussion_as_read(function(err, code, body) {
+          // @todo //ccc
+          it('should accept an id param and callback with success', function(done) {
+            ob.mark_discussion_as_read({'id': 'abcdef'}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if not receiving params', function(done) {
+            ob.mark_discussion_as_read(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });

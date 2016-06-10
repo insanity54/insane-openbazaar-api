@@ -14,29 +14,33 @@ var debug = require('debug')('insane-openbazaar-api');
 // });
 
 
+var JSONparse = function JSONparse(maybeJSON) {
+  if (typeof maybeJSON === 'string') {
+    try {
+      maybeJSON = JSON.parse(maybeJSON);
+    }
+    catch(e) {
+      return maybeJSON;
+    }
+  }
+  return maybeJSON;
+}
+
+
 /**
  * constructor
  */
 var Api = function Api(options) {
   var self = this;
-  self.implements = {
-    "getters": [
-      'profile',
-      'get_sales'
-    ],
-    "setters": [
-      'login'
-    ]
-  };
 
-  self.userAgent = 'insane-openbazaar-api';
+  //self.userAgent = 'insane-openbazaar-api';
 
-  self.buildURL = function buildURL(endpoint) {
-    return url.resolve(
-      self.opts.proto+'://'+self.opts.host+':'+self.opts.port,
-      endpoint
-    );
-  }
+  // self.buildURL = function buildURL(endpoint) {
+  //   return url.resolve(
+  //     self.opts.proto+'://'+self.opts.host+':'+self.opts.port,
+  //     endpoint
+  //   );
+  // }
 
   self.cookieString = '';
 
@@ -107,11 +111,11 @@ Api.prototype.request = function request(action, method, params, callback, optio
     uri: {
       protocol: self.opts.proto + ':',
       hostname: self.opts.host,
-      path: '/api/' + self.opts.version + '/' + action,
+      pathname: '/api/' + self.opts.version + '/' + action,
       port: self.opts.port
     },
     headers: headers,
-    json: true,
+    json: false,
   };
 
   //debug(request_options);
@@ -133,10 +137,13 @@ Api.prototype.request = function request(action, method, params, callback, optio
 
     request_options.body = body;
     Request.post(request_options, function (err, res, body) {
+      debug('posted. err=%s, res=%s, body=%s', err, res, body)
+
       if (err || !res) {
         debug('got error or no response err=' + err + ' res=' + res);
         return callback(err, 500, body);
       }
+
       if (res.statusCode != 200) {
         debug('got not a 200. statusCode='+res.statusCode + ' error=' + err + ' body=' + body)
       }
@@ -149,14 +156,16 @@ Api.prototype.request = function request(action, method, params, callback, optio
         self.cookieString.substring(0, self.cookieString.indexOf(';'));
       }
 
+      body = JSONparse(body);
       return callback(err, res.statusCode, body);
 
     });
   } else if (method == 'GET') {
-    request_options.body = params;
-    debug(params)
+    request_options.qs = params;
+    debug(request_options)
     Request.get(request_options, function (err, res, body) {
       debug('err=%s, res=%s, body=%s', err, res, body);
+      body = JSONparse(body);
       return callback(err, res.statusCode, body);
     });
   } else if (method == 'DELETE') {
@@ -382,6 +391,7 @@ Api.prototype.get_notifications = function get_notifications(params, callback) {
 Api.prototype.get_chat_messages = function get_chat_messages(params, callback) {
   var action = 'get_chat_messages';
   var method = 'GET';
+  debug(params)
   debug('action=%s, method=%s, params=%s, callback=%s', action, method, params, callback);
   this.request(action, method, params, callback);
 }
@@ -416,14 +426,14 @@ Api.prototype.shutdown = function shutdown(params, callback) {
 Api.prototype.get_sales = function get_sales(params, callback) {
   var action = 'get_sales';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
 Api.prototype.get_purchases = function get_purchases(params, callback) {
   var action = 'get_purchases';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
@@ -451,7 +461,7 @@ Api.prototype.get_order = function get_order(params, callback) {
 Api.prototype.get_cases = function get_cases(params, callback) {
   var action = 'get_cases';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
@@ -465,14 +475,14 @@ Api.prototype.order_messages = function order_messages(params, callback) {
 Api.prototype.get_ratings = function get_ratings(params, callback) {
   var action = 'get_ratings';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
 Api.prototype.btc_price = function btc_price(params, callback) {
   var action = 'btc_price';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
