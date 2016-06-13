@@ -6,6 +6,7 @@ OpenBazaar API allows consumers to interact with an OpenBazaar-Server
 
 
 
+
 # Login [/api/v1/login]
 
 Log in to the OpenBazaar API server
@@ -28,6 +29,36 @@ Log in to the OpenBazaar API server
         {
             "success": true
         }
+
+
+# Images [/api/v1/get_image]
+
+## Retrieve image [GET]
+
++ Request Unauthorized; no auth cookie
+
+* Response 404
+
++ Request Authorized with auth cookie, but no parameters sent
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+
++ Response 404 (text/html)
+    + Headers
+        HTTP/1.1 404 Not Found
+        Transfer-Encoding: chunked
+        Date: Thu, 09 Jun 2016 13:16:18 GMT
+        Content-Type: text/html; charset=utf-8
+        Server: TwistedWeb/16.1.0
+    + Body
+        <html>
+          <head><title>404 - No Such Resource</title></head>
+          <body>
+            <h1>No Such Resource</h1>
+            <p>Sorry. No luck finding that resource.</p>
+          </body>
+        </html>
+
 
 
 # Owner's Profile [/api/v1/profile]
@@ -81,14 +112,11 @@ Retrieve the user's profile
 
 + Request Unauthorized without auth cookie
 
-+ Response 401 (text/html)
-    + Headers
-        Date: Fri, 13 May 2016 23:59:58 GMT
-        Content-Type: text/html
-        Server: TwistedWeb/16.1.0
-        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
-    + Body
-        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
++ Response 401
+
+    <html>
+    blah @todo
+    </html>
 
 
 ## Network Profile [/api/v1/profile{?guid}]
@@ -155,9 +183,51 @@ Retrieve the user's profile
         <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
 
 
-## Sales List [/api/v1/get_sales]
 
-## Retrieve List of Sales [GET]
+        ## Sales List [/api/v1/get_sales]
+
+        ## Retrieve List of Sales [GET]
+
+        + Request
+            + Headers
+                Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+
+        + Response 200 (application/json)
+            + Headers
+                Date: Thu, 12 May 2016 07:11:41 GMT
+                Content-Type: application/json
+                Server: TwistedWeb/16.1.0
+            + Body
+                [
+                  {
+                      "status": 3,
+                      "description": "blah blah blah",
+                      "title": "(10 Piece) WS2812 +WIZARD+SQUARES+ RGB LED BLACK PCB Module Light 5V",
+                      "order_id": "5e6846513e4e3fbfc7b7760990d4104edbdc4f7d",
+                      "timestamp": 1461164874.994542,
+                      "contract_type": "physical good",
+                      "btc_total": 0.01897378,
+                      "buyer": "@bluray",
+                      "thumbnail_hash": "f605e3c11ec57ab590bb25070065ed1706b36efb"
+                  },
+                  {
+                      "status": 2,
+                      "description": "blah^3",
+                      "title": "SanDisk 8GB 8 GB Cruzer Blade USB 2.0Micro Pen Flash Drive SDCZ50-008G",
+                      "order_id": "002f0baf55de5f1c580e0d11b058798c655dea74",
+                      "timestamp": 1462591842.708922,
+                      "contract_type": "physical good",
+                      "btc_total": 0.0129361,
+                      "buyer": "839a83989a389a9389a93993a9398a398a8939a9",
+                      "thumbnail_hash": "464f799ef5cce8a7a4073a608ba3b9a8e11eee5e"
+                  }
+                ]
+
+
+
+## Get Chat Messages [/api/v1/get_chat_messages]
+
+## Retrieve Chat messages given a GUID [GET]
 
 + Request
     + Headers
@@ -170,26 +240,23 @@ Retrieve the user's profile
         Server: TwistedWeb/16.1.0
     + Body
         [
-          {
-              "status": 3,
-              "description": "blah blah blah",
-              "title": "(10 Piece) WS2812 +WIZARD+SQUARES+ RGB LED BLACK PCB Module Light 5V",
-              "order_id": "5e6846513e4e3fbfc7b7760990d4104edbdc4f7d",
-              "timestamp": 1461164874.994542,
-              "contract_type": "physical good",
-              "btc_total": 0.01897378,
-              "buyer": "@bluray",
-              "thumbnail_hash": "f605e3c11ec57ab590bb25070065ed1706b36efb"
-          },
-          {
-              "status": 2,
-              "description": "blah^3",
-              "title": "SanDisk 8GB 8 GB Cruzer Blade USB 2.0Micro Pen Flash Drive SDCZ50-008G",
-              "order_id": "002f0baf55de5f1c580e0d11b058798c655dea74",
-              "timestamp": 1462591842.708922,
-              "contract_type": "physical good",
-              "btc_total": 0.0129361,
-              "buyer": "839a83989a389a9389a93993a9398a398a8939a9",
-              "thumbnail_hash": "464f799ef5cce8a7a4073a608ba3b9a8e11eee5e"
-          }
+          "yeah",
+          "cool"
         ]
+
+
+
+
+
+
+# NoSuchResource
+
++ Model (text/html)
+
+    <html>
+      <head><title>404 - No Such Resource</title></head>
+      <body>
+        <h1>No Such Resource</h1>
+        <p>Sorry. No luck finding that resource.</p>
+      </body>
+    </html>

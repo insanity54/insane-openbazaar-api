@@ -147,3 +147,8 @@ I can also test against a live openbazaar server, by these environment variables
 The OB_LIVE_TEST is what tells the mocha test to run against a live OpenBazaar server. I just comment or uncomment that line depending on what type of test I want to run.
 
 When Travic-CI runs the test, `TRAVIS` is set in the environment. Mocha sees this environment variable, and calls Drakov from within the test.
+
+
+### Troubleshooting
+
+If you get something like "Cannot POST /api/v1/login" in the body of the response from Drakov or OpenBazaar-Server, it means your request isn't matching the OpenBazaar-Server spec (see spec.md). Maybe you aren't sending the username and password as a querystring in the body? Maybe you are sending the wrong username and password? (Drakov requires username:test password:test.) See `blobs/example-curl-trace.txt` for an example of how a good request looks. You can also use the node module, `request-debug` to see what your request is sending.

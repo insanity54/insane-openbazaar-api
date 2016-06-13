@@ -202,7 +202,7 @@ describe('api', function() {
           password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
         }, function(err, code, body) {
           assert.isNull(err);
-          assert.equal(200, code);
+          assert.equal(code, 200);
           assert.isDefined(body);
           done();
         });
@@ -212,72 +212,106 @@ describe('api', function() {
         this.timeout(process.env.OB_LIVE_TEST ? (1000 * 10) : (1000 * 1));
 
         describe('get_image', function() {
-          it('should return an array of images', function(done) {
-            ob.get_image(function(err, images) {
+          it('should return a raw image', function(done) {
+            ob.get_image({"hash": '55456e9efbafb5139977d1f86313eaac3293a88b'}, function(err, image) {
               assert.isNull(err);
-              assert.isDefined(images);
-              assert.isArray(images);
+              assert.isNumber(image);
+              done();
+            });
+          });
+          it('should bork if not receiving hash parameter', function(done) {
+            ob.get_image(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
-        describe('profile', function() {
-
-          xit('should bork if there is no authentication cookie available', function(done) {
-            ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
-              assert.match(err, /no cookie/);
-              assert.isNull(reply);
-              done();
-            });
-          });
-
-          it('should bork if receiving no args', function() {
-            assert.throws(ob.profile, /no arguments/);
-          });
-
-          it('should accept one param, a callback. Then callback with profile object', function(done) {
-            // this will fail if running against a live OpenBazaar-Server server that is not serving a store
-            ob.profile(function(err, prof) {
-              assert.isNull(err, 'Did not see your store profile. is this OpenBazaar-Server instance hosting a store?');
-              assert.isObject(prof);
-              assert.isString(prof.profile.short_description);
-              done();
-            });
-          });
-
-          it('should accept two params, a GUID and a callback. Then callback with profile object', function(done) {
-            ob.profile('a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
+        describe('get_profile', function() {
+          it('should accept a guid and return a profile object', function(done) {
+            ob.get_profile({'guid': 'a06aa22a38f0e62221ab74464c311bd88305f88c'}, function(err, code, body) {
               assert.isNull(err);
-              assert.isObject(reply);
-              assert.match(reply.profile.website, /openbazaar\.org/);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isString(body.profile.short_description);
+              assert.match(body.profile.short_description, /Trade free/);
               done();
             });
           });
-
-          it('should bork if receiving an invalid GUID', function(done) {
-            ob.profile('asdfasfa44t4fa89398', function(err, reply) {
-              assert.match(err, /invalid GUID/);
-              assert.isNull(reply);
+          it('should return own profile if receiving no params', function() {
+            ob.get_profile(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isString(body.profile.short_description);
               done();
             });
           });
         });
         describe('get_listings', function() {
-          it('should callback with array of listings', function(done) {
+          it('should accept no params and callback with object of own listings', function(done) {
             ob.get_listings(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              done();
+            });
+          });
+          it('should accept guid param and callback with listings object', function(done) {
+            ob.get_listings({"guid": "a06aa22a38f0e62221ab74464c311bd88305f88c"}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
               done();
             });
           });
         });
         describe('get_followers', function() {
-          it('should callback with array of followers', function(done) {
+          it('should accept guid param and callback with followers object', function(done) {
+            ob.get_followers({"guid": "a06aa22a38f0e62221ab74464c311bd88305f88c"}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isArray(body.followers);
+              done();
+            });
+          });
+          it('should accept guid and start param and callback with followers object', function(done) {
+            ob.get_followers({"guid": "a06aa22a38f0e62221ab74464c311bd88305f88c", "start": 50}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isArray(body.followers);
+              done();
+            });
+          });
+          it('should accept no params and callback with followers object', function(done) {
             ob.get_followers(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isArray(body.followers);
+              done();
+            });
+          });
+        });
+        describe('get_following', function() {
+          it('should accept guid param and callback with following object', function(done) {
+            ob.get_following({"guid": "a06aa22a38f0e62221ab74464c311bd88305f88c"}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isArray(body.following);
+              done();
+            });
+          });
+          it('should accept no params and callback with following object', function(done) {
+            ob.get_following(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isArray(body.following);
               done();
             });
           });
@@ -287,7 +321,7 @@ describe('api', function() {
             ob.get_settings(function(err, code, body) {
               debug('callback! err=%s, code=%s, body=%s', err, code, body);
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isObject(body);
               assert.isString(body.currency_code);
               done();
@@ -569,11 +603,21 @@ describe('api', function() {
           });
         });
         describe('follow', function() {
-          it('should callback ???', function(done) {
-            ob.follow(function(err, code, body) {
+          it('should accept a guid to follow and callback with success', function(done) {
+            this.timeout(10000);
+            ob.follow({"guid": "d47eea06209d3da8dc10937399a9cf1c3dd4dca4"}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if no params received', function(done) {
+            ob.follow(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
@@ -582,7 +626,7 @@ describe('api', function() {
           it('should callback with ???', function(done) {
             ob.unfollow(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isArray(body);
               done();
             });

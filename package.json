@@ -29,13 +29,17 @@
   "homepage": "https://github.com/insanity54/insane-openbazaar-api#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "coveralls": "^2.11.9",
     "drakov": "^1.0.0",
     "foreman": "^1.4.1",
     "mocha": "^2.4.5",
+    "mocha-lcov-reporter": "^1.2.0",
     "semver": "^5.1.0"
   },
   "dependencies": {
-    "superagent": "^1.8.3",
+    "debug": "^2.2.0",
+    "qs": "^6.2.0",
+    "request": "^2.72.0",
     "underscore": "1.8.3"
   }
 }

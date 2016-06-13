@@ -100,8 +100,8 @@ Api.prototype.request = function request(action, method, params, callback, optio
   //var path = self.opts.proto + '://' + self.opts.host + '/api/' + self.opts.version + '/' + action;
 
   var headers = {
-      'content-type': 'application/x-www-form-urlencoded',
-      'accept': '*/*',
+    'content-type': 'application/x-www-form-urlencoded',
+    'accept': '*/*'
   };
 
   var auth = self.cookieString;
@@ -129,12 +129,13 @@ Api.prototype.request = function request(action, method, params, callback, optio
     if (action === 'login') {
       if (typeof params['username'] === 'undefined' || typeof params['password'] === 'undefined') return callback(new Error('username and password are required to log in', null, null));
       body = qs.stringify({'username': params['username'], 'password': params['password']})
-      request_options.json = false;
     }
     else {
-      body = JSON.stringify(params);
+      body = qs.stringify(params);
     }
 
+
+    debug(request_options);
     request_options.body = body;
     Request.post(request_options, function (err, res, body) {
       debug('posted. err=%s, res=%s, body=%s', err, res, body)
@@ -344,28 +345,28 @@ Api.prototype.profile = function profile(params, callback) {
 Api.prototype.get_profile = function get_profile(params, callback) {
   var action = 'profile';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
 Api.prototype.get_listings = function get_listings(params, callback) {
   var action = 'get_listings';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
 Api.prototype.get_followers = function get_followers(params, callback) {
   var action = 'get_followers';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
 Api.prototype.get_following = function get_following(params, callback) {
   var action = 'get_following';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
@@ -500,6 +501,8 @@ Api.prototype.login = function login(params, callback) {
 
 
 Api.prototype.follow = function follow(params, callback) {
+  debug('follow!')
+  debug(params);
   var action = 'follow';
   var method = 'POST';
   this.request(action, method, params, callback);
