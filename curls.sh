@@ -45,3 +45,14 @@ curl \
     --dump-header ./blobs/test.headers.follow \
     --trace ./blobs/test.trace.follow \
     $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/follow
+
+
+heading "(DELETE) social_accounts"
+curl \
+    -L \
+    -b ./blobs/test.headers.login \
+    -X DELETE \
+    --data "account_type=twitter" \
+    --dump-header ./blobs/test.headers.social_accounts \
+    --trace ./blobs/test.trace.social_accounts \
+    $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/social_accounts

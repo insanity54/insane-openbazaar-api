@@ -97,10 +97,14 @@ describe('api', function() {
       // Easy way to test against a live OpenBazaar-Server instead of Drakov
       if (process.env.OB_LIVE_TEST) {
         apiOptions = {
+          "proto": process.env.OB_PROTO,
           "port": process.env.OB_PORT,
           "host": process.env.OB_HOST,
           "username": process.env.OB_USERNAME,
           "password": process.env.OB_PASSWORD
+        }
+        if (apiOptions.proto === 'https') {
+          apiOptions.ca = path.join(__dirname, '..', 'blobs', 'rootCA.3.crt');
         }
       }
       else {
@@ -195,7 +199,43 @@ describe('api', function() {
     });
 
 
-    describe('API', function() {
+    describe('Ambiguous requests', function() {
+      describe('profile', function() {
+        it('should bork and recommend either a get_ or set_ prefix', function() {
+          assert.throws(
+            (function() {
+              ob.profile(function(err, contracts) {});
+            }), /Please use/);
+        });
+      });
+      describe('contracts', function() {
+        it('should throw with message saying to use a get/set/delete prefix', function() {
+          assert.throws(
+            (function() {
+              ob.contracts(function(err, contracts) {});
+            }), /Please use/);
+        });
+      });
+      describe('settings', function() {
+        it('should throw, telling to use a get/set prefix', function() {
+          assert.throws(
+            (function() {
+              ob.settings(function(err, contracts) {});
+            }), /Please use/);
+        });
+      });
+      describe('social_accounts', function() {
+        it('should throw, suggesting to use a get/set prefix', function() {
+          assert.throws(
+            (function() {
+              ob.social_accounts(function(err, code, accounts) {});
+            }), /Please use/);
+        });
+      });
+    });
+
+
+    describe('Network requests', function() {
       beforeEach(function(done) {
         ob.login({
           username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
@@ -207,6 +247,7 @@ describe('api', function() {
           done();
         });
       });
+
 
       describe('GET requests', function() {
         this.timeout(process.env.OB_LIVE_TEST ? (1000 * 10) : (1000 * 1));
@@ -230,6 +271,7 @@ describe('api', function() {
         });
         describe('get_profile', function() {
           it('should accept a guid and return a profile object', function(done) {
+            this.timeout(10000);
             ob.get_profile({'guid': 'a06aa22a38f0e62221ab74464c311bd88305f88c'}, function(err, code, body) {
               assert.isNull(err);
               assert.equal(code, 200);
@@ -239,7 +281,7 @@ describe('api', function() {
               done();
             });
           });
-          it('should return own profile if receiving no params', function() {
+          it('should return own profile if receiving no params', function(done) {
             ob.get_profile(function(err, code, body) {
               assert.isNull(err);
               assert.equal(code, 200);
@@ -373,32 +415,24 @@ describe('api', function() {
             });
           });
         });
-        describe('contracts', function() {
-          it('should throw with message saying to use a get/set/delete prefix', function() {
-            assert.throws(
-              (function() {
-                ob.contracts(function(err, contracts) {});
-              }), /Please use/);
-          });
-        });
         describe('get_contracts', function() {
-          it('should return with array of contracts', function(done) {
-            ob.get_contracts(function(err, code, contracts) {
+          it('should accept no params and callback with an empty object', function(done) {
+            ob.get_contracts(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(contracts);
+              assert.equal(code, 200);
+              assert.isObject(body);
               done();
             });
           });
         });
         describe('shutdown', function() {
-          it('should callback with ???', function(done) {
-            ob.get_followers(function(err, code, body) {
-              assert.isNull(err);
-              assert.equal(200, code);
-              assert.isDefined(body);
-              done();
-            });
+          it('should not callback', function() {
+            // this one is kind of awkward because openbazaar-server does not
+            // respond in the event of success. It only responds when unauthorized
+            // @todo see if openbazaar-server can change their endpoint to
+            //       respond before shutting down.
+            // @todo re-write this test so it actually catches failures
+            assert.doesNotThrow(ob.shutdown, /undefined/);
           });
         });
         describe('get_sales', function() {
@@ -604,7 +638,7 @@ describe('api', function() {
         });
         describe('follow', function() {
           it('should accept a guid to follow and callback with success', function(done) {
-            this.timeout(10000);
+            this.timeout(5000);
             ob.follow({"guid": "d47eea06209d3da8dc10937399a9cf1c3dd4dca4"}, function(err, code, body) {
               assert.isNull(err);
               assert.equal(code, 200);
@@ -623,72 +657,116 @@ describe('api', function() {
           });
         });
         describe('unfollow', function() {
-          it('should callback with ???', function(done) {
-            ob.unfollow(function(err, code, body) {
+          it('should take a guid and callback with success', function(done) {
+            ob.unfollow({"guid": "d47eea06209d3da8dc10937399a9cf1c3dd4dca4"}, function(err, code, body) {
               assert.isNull(err);
               assert.equal(code, 200);
-              assert.isArray(body);
-              done();
-            });
-          });
-        });
-        describe('profile', function() {
-          it('should callback profile object', function(done) {
-            ob.profile(function(err, code, body) {
-              assert.isNull(err);
-              assert.equal(200, code);
               assert.isObject(body);
-              assert.isString(body.short_description);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if no params received', function(done) {
+            ob.unfollow(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
-        describe('social_accounts', function() {
-          it('should callback ???', function(done) {
-            ob.social_accounts(function(err, code, body) {
+        describe('set_profile', function() {
+          it('should accept a profile object and return success', function(done) {
+            ob.set_profile({"name": "Sunshine Martian", "location": "UNITED_STATES"}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork given no params', function(done) {
+            ob.set_profile(function(err, code, body) {
+              assert.isDefined(err);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
-        describe('contracts', function() {
-          it('should callback ???', function(done) {
-            ob.contracts(function(err, code, body) {
+        describe('set_social_accounts', function() {
+          it('should bork given no params', function(done) {
+            ob.set_social_accounts(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
+              done();
+            });
+          });
+          it('should accept username and account_type parameters then callback with success', function(done) {
+            ob.set_social_accounts({"username": "@sunshinemartian", "account_type": "twitter"}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+        });
+        describe('set_contracts', function() {
+          xit('should bork when receiving no params', function(done) {
+            ob.set_contracts(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
+            });
+          });
+          it('should accept a contract object and callback with success', function(done) {
+            ob.set_contracts({
+
+            }, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
               done();
             });
           });
         });
         describe('make_moderator', function() {
-          it('should callback ???', function(done) {
+          it('should accept no params and callback with success', function(done) {
             ob.make_moderator(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
               done();
             });
           });
         });
         describe('unmake_moderator', function() {
-          it('should callback ???', function(done) {
+          it('should accept no params and callback with success', function(done) {
             ob.unmake_moderator(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
               done();
             });
           });
         });
         describe('purchase_contract', function() {
-          it('should callback ???', function(done) {
-            ob.purchase_contract(function(err, code, body) {
+          it('should accept an id, quantity parameter and callback with success', function(done) {
+            this.timeout(10000);
+            ob.purchase_contract({
+              "id": "59dc82cde6191c478f276a62ac57aaf174b54ebd",
+              "quantity": 2,
+              "refund_address": "1UiiekN3k92Hik3F58dCUKm7WEJPx6NSN"
+            }, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
               done();
             });
           });
@@ -721,14 +799,6 @@ describe('api', function() {
               assert.isArray(body);
               done();
             });
-          });
-        });
-        describe('settings', function() {
-          it('should throw, telling to use a get/set prefix', function() {
-            assert.throws(
-              (function() {
-                ob.settings(function(err, contracts) {});
-              }), /Please use/);
           });
         });
         describe('mark_notification_as_read', function() {
@@ -880,20 +950,20 @@ describe('api', function() {
       });
 
       describe('DELETE requests', function() {
-        describe('social_accounts', function() {
-          it('should throw, suggesting to use a get/set prefix', function() {
-            assert.throws(
-              (function() {
-                ob.social_accounts(function(err, code, accounts) {});
-              }), /Please use/);
-          });
-        });
         describe('delete_social_accounts', function() {
-          it('should return ???', function(done) {
-            ob.delete_social_accounts(function(err, code, body) {
+          it('should accept account_type param and return success', function(done) {
+            ob.delete_social_accounts({"account_type": "twitter"}, function(err, code, body) {
               assert.isNull(err);
               assert.equal(200, code);
               assert.isDefined(body);
+              done();
+            });
+          });
+          it('should bork when receiving no params', function(done) {
+            ob.delete_social_accounts(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });

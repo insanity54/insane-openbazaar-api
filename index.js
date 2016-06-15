@@ -49,17 +49,18 @@ var Api = function Api(options) {
     "port": "18469",
     "proto": "http",
     "version": "v1",
+    "verifySSL": "false"
   };
   self.opts = _.extend({}, self.defaultOpts, options);
-
+  debug(self.opts)
 
   if (self.opts.proto === 'https') {
-    if (typeof self.opts.cert === 'undefined') throw new Error('you specified you wanted to use HTTPS, but you did not specify the certificate (options.cert)');
-    if (typeof self.opts.key === 'undefined') throw new Error('you specified you wanted to use HTTPS, but you did not specify the key (options.key)');
+    //if (typeof self.opts.cert === 'undefined') throw new Error('you specified you wanted to use HTTPS, but you did not specify the certificate (options.cert)');
+    //if (typeof self.opts.key === 'undefined') throw new Error('you specified you wanted to use HTTPS, but you did not specify the key (options.key)');
     if (typeof self.opts.ca === 'undefined') throw new Error('you specified you wanted to use HTTPS, but you did not specify the certificate authority (options.ca)');
     self.ssl = {
-      cert: fs.readFileSync(self.opts.cert),
-      key: fs.readFileSync(self.opts.key),
+      //cert: fs.readFileSync(self.opts.cert),
+      //key: fs.readFileSync(self.opts.key),
       ca: fs.readFileSync(self.opts.ca)
     };
   }
@@ -73,7 +74,7 @@ var Api = function Api(options) {
   if (/:\/\//.test(self.opts.proto))
     throw new Error('please remove the colon slash slash (://) from proto');
 
-  if (!_.contains(['http', 'https'], self.opts.proto))
+  if (!_.contains(['https', 'http'], self.opts.proto))
     throw new Error('proto must be either http or https');
 }
 
@@ -116,9 +117,18 @@ Api.prototype.request = function request(action, method, params, callback, optio
     },
     headers: headers,
     json: false,
+    rejectUnauthorized: false
   };
 
-  //debug(request_options);
+  if (self.opts.verifySSL == true)
+    request_options.rejectUnauthorized = true;
+
+
+  if (self.ssl)
+    request_options.ca = self.ssl.ca;
+
+
+  debug(request_options);
 
   if (method == 'POST') {
     var body;
@@ -142,6 +152,7 @@ Api.prototype.request = function request(action, method, params, callback, optio
 
       if (err || !res) {
         debug('got error or no response err=' + err + ' res=' + res);
+        debug(err);
         return callback(err, 500, body);
       }
 
@@ -413,14 +424,14 @@ Api.prototype.contracts = function(params, callback) {
 Api.prototype.get_contracts = function get_contracts(params, callback) {
   var action = 'contracts';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 };
 
 
 Api.prototype.shutdown = function shutdown(params, callback) {
   var action = 'shutdown';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 
@@ -523,8 +534,8 @@ Api.prototype.set_profile = function set_profile(params, callback) {
 };
 
 Api.prototype.social_accounts = function social_accounts(params, callback) {
-  this.set_social_accounts.call(this, params, callback);
-}
+  throw new Error('Please use get_profile() or set_social_accounts() or delete_social_accounts()');
+};
 
 Api.prototype.set_social_accounts = function set_social_accounts(params, callback) {
   var action = 'social_accounts';
@@ -543,14 +554,14 @@ Api.prototype.set_contracts = function set_contracts(params, callback) {
 Api.prototype.make_moderator = function make_moderator(params, callback) {
   var action = 'make_moderator';
   var method = 'POST';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 };
 
 
 Api.prototype.unmake_moderator = function unmake_moderator(params, callback) {
   var action = 'unmake_moderator';
   var method = 'POST';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 };
 
 

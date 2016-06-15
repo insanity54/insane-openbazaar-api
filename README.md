@@ -151,4 +151,16 @@ When Travic-CI runs the test, `TRAVIS` is set in the environment. Mocha sees thi
 
 ### Troubleshooting
 
+#### Cannot POST
+
 If you get something like "Cannot POST /api/v1/login" in the body of the response from Drakov or OpenBazaar-Server, it means your request isn't matching the OpenBazaar-Server spec (see spec.md). Maybe you aren't sending the username and password as a querystring in the body? Maybe you are sending the wrong username and password? (Drakov requires username:test password:test.) See `blobs/example-curl-trace.txt` for an example of how a good request looks. You can also use the node module, `request-debug` to see what your request is sending.
+
+
+#### [Error: socket hang up]
+
+If you get the above error when trying to use the API against a live OpenBazaar-Server, check your server configuration. If SSL is enabled on your OpenBazaar-Server, but you have your API set to use HTTP, you will see the above error. In your API environment variables, add `OB_PROTO=https`
+
+
+#### Error: Hostname/IP doesn't match certificate's altnames: "IP: xxx.xxx.xxx.xxx is not in the cert's list:
+
+If you followed the OpenBazaar team's guide on [setting up SSL](https://slack-files.com/T02FPGBKB-F0XK9ND2Q-fc5e6500a3), that guide doesn't have you pay any attention to seting SSL CA names, localities, etc. Because of that, your CA has no altnames, which node uses to check and see if it is talking to the correct server. To get past this error in a secure fashion, you will need to create a new SSL certificate with a subjectAltName (SAN). See https://wiki.cacert.org/FAQ/subjectAltName
