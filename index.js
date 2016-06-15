@@ -452,7 +452,7 @@ Api.prototype.get_purchases = function get_purchases(params, callback) {
 Api.prototype.connected_peers = function connected_peers(params, callback) {
   var action = 'connected_peers';
   var method = 'GET';
-  this.request(action, method, params, callback);
+  this.request(action, method, params, callback, true);
 }
 
 

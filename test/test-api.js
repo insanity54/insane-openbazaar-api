@@ -320,7 +320,7 @@ describe('api', function() {
             });
           });
           it('should accept guid and start param and callback with followers object', function(done) {
-            ob.get_followers({"guid": "a06aa22a38f0e62221ab74464c311bd88305f88c", "start": 50}, function(err, code, body) {
+            ob.get_followers({"guid": "a06aa22a38f0e62221ab74464c311bd88305f88c", "start": 2}, function(err, code, body) {
               assert.isNull(err);
               assert.equal(code, 200);
               assert.isObject(body);
@@ -408,9 +408,8 @@ describe('api', function() {
           it('should callback with array of conversations', function(done) {
             ob.get_chat_conversations(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isArray(body);
-              console.log(body)
               done();
             });
           });
@@ -456,20 +455,22 @@ describe('api', function() {
           });
         });
         describe('connected_peers', function() {
-          it('should callback with array of peers', function(done) {
+          it('should accept no params and callback with peers object', function(done) {
             ob.connected_peers(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isArray(body.peers);
+              assert.isNumber(body.num_peers);
               done();
             });
           });
         });
         describe('routing_table', function() {
-          it('should callback with array of guids', function(done) {
+          it('should accept no params and callback with array of routes', function(done) {
             ob.routing_table(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isArray(body);
               assert.match(body[0].guid, guidRegEx);
               done();
@@ -481,19 +482,10 @@ describe('api', function() {
             ob.get_order({'order_id': '8da26ad7af510bc5e94c3f4314865c60578d18b6'}, function(err, code, body) {
               assert.isNull(err);
               assert.equal(code, 200);
-              debug('err=%s, code=%s, body=%s', err, code, body)
               assert.isObject(body);
               done();
             });
           });
-          // it('should callback with order object (send Array obj.order_id)', function(done) {
-          //   ob.get_order([{'order_id': '8da26ad7af510bc5e94c3f4314865c60578d18b6'}], function(err, code, body) {
-          //     assert.isNull(err);
-          //     assert.equal(code, 200);
-          //     assert.isObject(body);
-          //     done();
-          //   });
-          // });
           it('should bork if not receiving order_id', function(done) {
             ob.get_order(function(err, code, body) {
               assert.match(err, /params are required/);
@@ -714,7 +706,7 @@ describe('api', function() {
           });
         });
         describe('set_contracts', function() {
-          xit('should bork when receiving no params', function(done) {
+          it('should bork when receiving no params', function(done) {
             ob.set_contracts(function(err, code, body) {
               assert.match(err, /params are required/);
               assert.isNull(code);
@@ -954,7 +946,7 @@ describe('api', function() {
           it('should accept account_type param and return success', function(done) {
             ob.delete_social_accounts({"account_type": "twitter"}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isDefined(body);
               done();
             });
