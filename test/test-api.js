@@ -6,6 +6,8 @@ var _ = require('underscore');
 var semver = require('semver');
 var debug = require('debug')('insane-openbazaar-api');
 
+var testImg = fs.readFileSync(path.join(__dirname, '..', 'blobs', 'testimage.png.b64'));
+var testImg2 = fs.readFileSync(path.join(__dirname, '..', 'blobs', 'testimage2.png.b64'));
 
 debug('OB_HOST=%s\nOB_PASSWORD=%s\nOB_USERNAME=%s\nOB_PROTO=%s\n\
 OB_PORT=%s\nOB_LIVE_TEST=%s\nDEBUG=%s',
@@ -423,6 +425,14 @@ describe('api', function() {
               done();
             });
           });
+          it('should accept an id param and callback with contract object', function(done) {
+              ob.get_contracts({"id": "6c3ab682de4ca527f5cb2d5775c737688dd13647"}, function(err, code, body) {
+                assert.isNull(err);
+                assert.equal(code, 200);
+                assert.isObject(body);
+                done();
+              });
+          });
         });
         describe('shutdown', function() {
           it('should not callback', function() {
@@ -711,11 +721,33 @@ describe('api', function() {
               assert.match(err, /params are required/);
               assert.isNull(code);
               assert.isNull(body);
+              done();
             });
           });
           it('should accept a contract object and callback with success', function(done) {
             ob.set_contracts({
-
+              "title": "DERP CONTRACT OF THE YEAR",
+              "terms_conditions": "you must be extra derpy to receive",
+              "returns": "you can return for one derpo",
+              "category": "tests",
+              "condition": "New",
+              "sku": "",
+              "keywords": ['derp', 'test'],
+              "expiration_date": "2016-06-17T11:10 UTC",
+              "metadata_category": "title",
+              "description": "derp item for you to derp with",
+              "currency_code": "USD",
+              "price": "5",
+              "process_time": "5 years",
+              "nsfw": "false",
+              "shipping_currency_code": "USD",
+              "shipping_domestic": "50",
+              "shipping_international": "100",
+              "images": [
+                'd19ce4ff4e8a98cf57f20705c47bc75dc574ed06',
+                'e7e6b5b2e74b9789d624f8aa7c9343f8388c2076'
+              ],
+              "free_shipping": "false"
             }, function(err, code, body) {
               assert.isNull(err);
               assert.equal(code, 200);
@@ -774,11 +806,39 @@ describe('api', function() {
           });
         });
         describe('upload_image', function() {
-          it('should callback ???', function(done) {
-            ob.upload_image(function(err, code, body) {
+          it('should accept image parameter and callback with success', function(done) {
+            ob.upload_image({"image": testImg}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should accept image parameter and callback with success', function(done) {
+            ob.upload_image({"image": testImg2}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should accept avatar parameter and callback with success', function(done) {
+            ob.upload_image({"avatar": testImg}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should accept header parameter and callback with success', function(done) {
+            ob.upload_image({"header": testImg}, function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
               done();
             });
           });

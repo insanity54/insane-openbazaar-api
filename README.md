@@ -86,12 +86,12 @@ ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, repl
 * [x] /api/v1/unfollow
 * [x] /api/v1/profile
 * [x] /api/v1/social_accounts
-* [ ] /api/v1/contracts
+* [x] /api/v1/contracts
 * [x] /api/v1/make_moderator
 * [x] /api/v1/unmake_moderator
 * [x] /api/v1/purchase_contract
 * [ ] /api/v1/confirm_order
-* [ ] /api/v1/upload_image
+* [x] /api/v1/upload_image
 * [ ] /api/v1/complete_order
 * [ ] /api/v1/settings
 * [ ] /api/v1/mark_notification_as_read

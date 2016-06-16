@@ -52,7 +52,7 @@ var Api = function Api(options) {
     "verifySSL": "false"
   };
   self.opts = _.extend({}, self.defaultOpts, options);
-  debug(self.opts)
+  debug(self.opts);
 
   if (self.opts.proto === 'https') {
     //if (typeof self.opts.cert === 'undefined') throw new Error('you specified you wanted to use HTTPS, but you did not specify the certificate (options.cert)');
@@ -138,13 +138,13 @@ Api.prototype.request = function request(action, method, params, callback, optio
     debug('action=%s', action);
     if (action === 'login') {
       if (typeof params['username'] === 'undefined' || typeof params['password'] === 'undefined') return callback(new Error('username and password are required to log in', null, null));
-      body = qs.stringify({'username': params['username'], 'password': params['password']})
+      body = qs.stringify({'username': params['username'], 'password': params['password']});
     }
     else {
-      body = qs.stringify(params);
+      body = qs.stringify(params, { arrayFormat: 'repeat' });
     }
 
-
+    debug(body);
     debug(request_options);
     request_options.body = body;
     Request.post(request_options, function (err, res, body) {
@@ -160,6 +160,15 @@ Api.prototype.request = function request(action, method, params, callback, optio
         debug('got not a 200. statusCode='+res.statusCode + ' error=' + err + ' body=' + body)
       }
 
+      if (body) {
+        body = JSONparse(body);
+        if (typeof body.success !== 'undefined') {
+          if (body.success == false) {
+            return callback(new Error(body.reason), null, body);
+          }
+        }
+      }
+
       // save the auth cookie, if this was a login
       if (action === 'login') {
         debug(res.headers);
@@ -168,7 +177,6 @@ Api.prototype.request = function request(action, method, params, callback, optio
         self.cookieString.substring(0, self.cookieString.indexOf(';'));
       }
 
-      body = JSONparse(body);
       return callback(err, res.statusCode, body);
 
     });
