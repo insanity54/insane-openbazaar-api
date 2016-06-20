@@ -87,6 +87,47 @@ Log in to the OpenBazaar API server
         }
 
 
+# Update Settings [/api/v1/settings]
+
+## Update Settings [POST]
+
++ Attributes
+    + refund_address (string) - BTC refund address of the user
+    + currency_code (string) - Local currency of the user
+    + country (string) - Local country of the user
+    + language (string) - Local language of the user
+    + time_zone (number) - Local timezone of the user. UTC offset
+    + notifications (boolean) - whether or not to send desktop notifications
+    + shipping_addresses (array)
+    + blocked (array) - blocked GUIDs
+    + terms_conditions (string) - default terms and conditions for listings
+    + refund_policy (string) - default refund policy for listings
+    + moderators (array) - list of moderators for user's store
+    + smtp_notifications (boolean) - whether or not to send email alerts
+    + smtp_server (string) - smtp server address
+    + smtp_recipient (string) - email address to send notifications to
+    + smtp_username (string) - username for smtp alerts
+    + smtp_password (string) - password for smtp alerts
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+    + Body
+        id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
 
 # Images [/api/v1/get_image]
 
@@ -279,6 +320,58 @@ Retrieve the user's profile
                       "thumbnail_hash": "464f799ef5cce8a7a4073a608ba3b9a8e11eee5e"
                   }
                 ]
+
+
+
+
+# Get Settings [/api/v1/settings]
+
+## Get Settings [GET]
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+    + Body
+        id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "seed": "78dff934280575994a0724ac33c7b3c4bc55fba9d3685e16f6181408aa5ef802",
+            "smtp_sender": "",
+            "smtp_server": "",
+            "libbitcoin_server": null,
+            "transaction_fee": 15000,
+            "blocked_guids": [
+                ""
+            ],
+            "smtp_password": "",
+            "smtp_notifications": false,
+            "refund_address": "2N8QBVWJjNbKPKHFXDYMmLQiwBbqaQZHJ97",
+            "refund_policy": "No refund policy",
+            "shipping_addresses": [
+                ""
+            ],
+            "resolver": "https://resolver.onename.com/",
+            "terms_conditions": "No terms or conditions",
+            "smtp_recipient": "",
+            "language": "en-US",
+            "notifications": true,
+            "country": "UNITED_STATES",
+            "network_connection": "Restricted",
+            "time_zone": "-8",
+            "moderators": [],
+            "smtp_username": "",
+            "currency_code": "BTC"
+        }
+
 
 
 
