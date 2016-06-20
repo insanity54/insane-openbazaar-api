@@ -31,13 +31,70 @@ Log in to the OpenBazaar API server
         }
 
 
+# Confirm Order [/api/v1/confirm_order]
+
+## Confirm Order [POST]
+
++ Attributes
+    + id (string) - string of the order to confirm
+    + payout_address (string) - bitcoin address the seller wants to rec funds at
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+    + Body
+        id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74&payout_address=n1t7Dp6EPrdj7UHZiQsKWic9qWYUYpLcXC
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
+
+
+# Complete Order [/api/v1/complete_order]
+
+## Complete Order [POST]
+
++ Attributes
+    + id (string) - string of the order to complete
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+    + Body
+        id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
+
+
 # Images [/api/v1/get_image]
 
 ## Retrieve image [GET]
 
 + Request Unauthorized; no auth cookie
 
-* Response 404
++ Response 404
 
 + Request Authorized with auth cookie, but no parameters sent
     + Headers

@@ -90,10 +90,10 @@ ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, repl
 * [x] /api/v1/make_moderator
 * [x] /api/v1/unmake_moderator
 * [x] /api/v1/purchase_contract
-* [ ] /api/v1/confirm_order
+* [x] /api/v1/confirm_order
 * [x] /api/v1/upload_image
-* [ ] /api/v1/complete_order
-* [ ] /api/v1/settings
+* [x] /api/v1/complete_order
+* [x] /api/v1/settings
 * [ ] /api/v1/mark_notification_as_read
 * [ ] /api/v1/broadcast
 * [ ] /api/v1/mark_chat_message_as_read

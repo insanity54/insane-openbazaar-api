@@ -796,11 +796,15 @@ describe('api', function() {
           });
         });
         describe('confirm_order', function() {
-          it('should callback ???', function(done) {
-            ob.confirm_order(function(err, code, body) {
+          it('should accept id parameter and callback with success', function(done) {
+            ob.confirm_order({
+              "id": "f4942393f5d3b9b53b4b58e00f65b9afc7576c74",
+              "payout_address": "n1t7Dp6EPrdj7UHZiQsKWic9qWYUYpLcXC"
+            }, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
               done();
             });
           });
@@ -844,11 +848,45 @@ describe('api', function() {
           });
         });
         describe('complete_order', function() {
-          it('should callback ???', function(done) {
-            ob.complete_order(function(err, code, body) {
+          it('should accept id and callback with success', function(done) {
+            ob.complete_order({"id": "f4942393f5d3b9b53b4b58e00f65b9afc7576c74"},function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+        });
+        describe('set_settings', function() {
+          it('should accept a settings object and callback with success', function(done) {
+            ob.get_settings(function(err, code, body) {
+              assert.isNull(err);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isString(body.currency_code);
+              var settings = body;
+              var refundString = "YOLO YOLO YOLO";
+              settings.refund_policy = refundString;
+              settings.blocked = settings.blocked_guids;
+              settings.moderators = "";
+              delete settings.blocked_guids; // @todo I think this is a bug. blocked_guids is inconsistently named.
+              debug(settings);
+
+              ob.set_settings(settings, function(err, code, body) {
+                assert.isNull(err);
+                assert.equal(code, 200);
+                assert.isObject(body);
+                assert.isTrue(body.success);
+                done();
+              });
+            });
+          });
+          it('should bork if not receiving params', function(done) {
+            ob.set_settings(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
