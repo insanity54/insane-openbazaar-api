@@ -46,7 +46,7 @@ Log in to the OpenBazaar API server
 
 + Request Authorized (application/x-www-form-urlencoded)
     + Headers
-        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
     + Body
         id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74&payout_address=n1t7Dp6EPrdj7UHZiQsKWic9qWYUYpLcXC
 
@@ -74,7 +74,7 @@ Log in to the OpenBazaar API server
 
 + Request Authorized (application/x-www-form-urlencoded)
     + Headers
-        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
     + Body
         id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74
 
@@ -87,9 +87,9 @@ Log in to the OpenBazaar API server
         }
 
 
-# Update Settings [/api/v1/settings]
+# Set Settings [/api/v1/settings]
 
-## Update Settings [POST]
+## Set Settings [POST]
 
 + Attributes
     + refund_address (string) - BTC refund address of the user
@@ -116,7 +116,7 @@ Log in to the OpenBazaar API server
 
 + Request Authorized (application/x-www-form-urlencoded)
     + Headers
-        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+8
     + Body
         id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74
 
@@ -133,13 +133,13 @@ Log in to the OpenBazaar API server
 
 ## Retrieve image [GET]
 
-+ Request Unauthorized; no auth cookie
-
++ Request Unauthorized no auth cookie
 + Response 404
+
 
 + Request Authorized with auth cookie, but no parameters sent
     + Headers
-        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
 
 + Response 404 (text/html)
     + Headers
@@ -168,6 +168,8 @@ Retrieve the user's profile
 
 + Request Authorized with auth cookie
     + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
         Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
 
 + Response 200 (application/json)
@@ -208,13 +210,16 @@ Retrieve the user's profile
         }
       }
 
-+ Request Unauthorized without auth cookie
++ Request without authentication cookie
++ Response 401 (text/html)
+    + Headers
+        Date: Fri, 13 May 2016 23:59:58 GMT
+        Content-Type: text/html
+        Server: TwistedWeb/16.1.0
+        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
+    + Body
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
 
-+ Response 401
-
-    <html>
-    blah @todo
-    </html>
 
 
 ## Network Profile [/api/v1/profile{?guid}]
@@ -282,44 +287,44 @@ Retrieve the user's profile
 
 
 
-        ## Sales List [/api/v1/get_sales]
+## Sales List [/api/v1/get_sales]
 
-        ## Retrieve List of Sales [GET]
+## Retrieve List of Sales [GET]
 
-        + Request
-            + Headers
-                Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
++ Request
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
 
-        + Response 200 (application/json)
-            + Headers
-                Date: Thu, 12 May 2016 07:11:41 GMT
-                Content-Type: application/json
-                Server: TwistedWeb/16.1.0
-            + Body
-                [
-                  {
-                      "status": 3,
-                      "description": "blah blah blah",
-                      "title": "(10 Piece) WS2812 +WIZARD+SQUARES+ RGB LED BLACK PCB Module Light 5V",
-                      "order_id": "5e6846513e4e3fbfc7b7760990d4104edbdc4f7d",
-                      "timestamp": 1461164874.994542,
-                      "contract_type": "physical good",
-                      "btc_total": 0.01897378,
-                      "buyer": "@bluray",
-                      "thumbnail_hash": "f605e3c11ec57ab590bb25070065ed1706b36efb"
-                  },
-                  {
-                      "status": 2,
-                      "description": "blah^3",
-                      "title": "SanDisk 8GB 8 GB Cruzer Blade USB 2.0Micro Pen Flash Drive SDCZ50-008G",
-                      "order_id": "002f0baf55de5f1c580e0d11b058798c655dea74",
-                      "timestamp": 1462591842.708922,
-                      "contract_type": "physical good",
-                      "btc_total": 0.0129361,
-                      "buyer": "839a83989a389a9389a93993a9398a398a8939a9",
-                      "thumbnail_hash": "464f799ef5cce8a7a4073a608ba3b9a8e11eee5e"
-                  }
-                ]
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        [
+          {
+              "status": 3,
+              "description": "blah blah blah",
+              "title": "(10 Piece) WS2812 +WIZARD+SQUARES+ RGB LED BLACK PCB Module Light 5V",
+              "order_id": "5e6846513e4e3fbfc7b7760990d4104edbdc4f7d",
+              "timestamp": 1461164874.994542,
+              "contract_type": "physical good",
+              "btc_total": 0.01897378,
+              "buyer": "@bluray",
+              "thumbnail_hash": "f605e3c11ec57ab590bb25070065ed1706b36efb"
+          },
+          {
+              "status": 2,
+              "description": "blah^3",
+              "title": "SanDisk 8GB 8 GB Cruzer Blade USB 2.0Micro Pen Flash Drive SDCZ50-008G",
+              "order_id": "002f0baf55de5f1c580e0d11b058798c655dea74",
+              "timestamp": 1462591842.708922,
+              "contract_type": "physical good",
+              "btc_total": 0.0129361,
+              "buyer": "839a83989a389a9389a93993a9398a398a8939a9",
+              "thumbnail_hash": "464f799ef5cce8a7a4073a608ba3b9a8e11eee5e"
+          }
+        ]
 
 
 
@@ -335,9 +340,7 @@ Retrieve the user's profile
 
 + Request Authorized (application/x-www-form-urlencoded)
     + Headers
-        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8; Path=/
-    + Body
-        id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
 
 + Response 200 (application/json)
     + Headers
@@ -371,6 +374,44 @@ Retrieve the user's profile
             "smtp_username": "",
             "currency_code": "BTC"
         }
+
+
+
+
+## Get Notifications [/api/v1/get_notifications]
+
+## Get current user's notifications [GET]
+
++ Request
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        { notifications:
+       [ { image_hash: '18796a43305ac227f6d605dbb78b99420406e19b',
+           title: 'lil fecker 2016',
+           read: false,
+           timestamp: 1466450069,
+           order_id: 'f4942393f5d3b9b53b4b58e00f65b9afc7576c74',
+           handle: '',
+           guid: '63306363323763376635613439316263396166336636316463336661396330393261303635613665',
+           type: 'order confirmation',
+           id: 'd8ee879dd2785dfd7de23cbdcabf579150272fcd' },
+         { image_hash: '18796a43305ac227f6d605dbb78b99420406e19b',
+           title: 'lil fecker 2016',
+           read: true,
+           timestamp: 1466123355,
+           order_id: 'f4942393f5d3b9b53b4b58e00f65b9afc7576c74',
+           handle: '',
+           guid: 'c0cc27c7f5a491bc9af3f61dc3fa9c092a065a6e',
+           type: 'payment received',
+           id: '527bb9d3942df143935c7bebf2a07f0c5514aebc' } ],
+      unread: 1 }
 
 
 
