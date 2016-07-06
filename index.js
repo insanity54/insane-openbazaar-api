@@ -172,9 +172,14 @@ Api.prototype.request = function request(action, method, params, callback, optio
       // save the auth cookie, if this was a login
       if (action === 'login') {
         debug(res.headers);
-        if (typeof res.headers['set-cookie'][0] === 'undefined') err = new Error('there was no set-cookie header when there should have been');
+        if (typeof res.headers['set-cookie'] === 'undefined')
+          return callback(
+            new Error('there was no set-cookie header received from the server when there should have been'),
+            null,
+            null
+          );
         self.cookieString = res.headers['set-cookie'][0];
-        self.cookieString.substring(0, self.cookieString.indexOf(';'));
+        self.cookieString = self.cookieString.substring(0, self.cookieString.indexOf(';'));
       }
 
       return callback(err, res.statusCode, body);

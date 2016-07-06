@@ -4,7 +4,8 @@
   "description": "OpenBazaar API client for Node.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "drakov": "drakov -f ./spec.md -p 3000 --watch"
   },
   "repository": {
     "type": "git",

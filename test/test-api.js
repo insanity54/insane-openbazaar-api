@@ -256,9 +256,10 @@ describe('api', function() {
 
         describe('get_image', function() {
           it('should return a raw image', function(done) {
-            ob.get_image({"hash": '55456e9efbafb5139977d1f86313eaac3293a88b'}, function(err, image) {
+            ob.get_image({"hash": '55456e9efbafb5139977d1f86313eaac3293a88b'}, function(err, code, body) {
               assert.isNull(err);
-              assert.isNumber(image);
+              assert.equal(code, 200);
+              assert.isNumber(body);
               done();
             });
           });
@@ -373,14 +374,13 @@ describe('api', function() {
           });
         });
         describe('get_notifications', function() {
-          it('should callback with notification object', function(done) {
+          it('should accept no params and callback with notification object', function(done) {
             ob.get_notifications(function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
+              assert.equal(code, 200);
               assert.isObject(body);
               assert.isNumber(body.unread);
               assert.isArray(body.notifications);
-              console.log(body);
               done();
             });
           });
@@ -892,21 +892,40 @@ describe('api', function() {
           });
         });
         describe('mark_notification_as_read', function() {
-          it('should callback ???', function(done) {
-            ob.mark_notification_as_read(function(err, code, body) {
+          it('should accept id and callback with success', function(done) {
+            ob.mark_notification_as_read({"id": "d8ee879dd2785dfd7de23cbdcabf579150272fcd"}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              done();
+            });
+          });
+          it('should bork if receiving no parameters', function(done) {
+            ob.mark_notification_as_read(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });
         });
         describe('broadcast', function() {
-          it('should callback ???', function(done) {
-            ob.broadcast(function(err, code, body) {
+          it('should accept message arg and callback with success', function(done) {
+            ob.broadcast({"message": "thankyouverymuch"}, function(err, code, body) {
               assert.isNull(err);
-              assert.equal(200, code);
-              assert.isArray(body);
+              assert.equal(code, 200);
+              assert.isObject(body);
+              assert.isTrue(body.success);
+              assert.isNumber(body['peers reached']);
+              done();
+            });
+          });
+          it('should bork if receiving no params', function(done) {
+            ob.broadcast(function(err, code, body) {
+              assert.match(err, /params are required/);
+              assert.isNull(code);
+              assert.isNull(body);
               done();
             });
           });

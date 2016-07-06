@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/insanity54/insane-openbazaar-api.svg?branch=master)](https://travis-ci.org/insanity54/insane-openbazaar-api)
 
-Openbazaar API client for Nodejs. WARNING: Incomplete implementation!!
+Openbazaar API client for Nodejs.
 
 ## Installation
 
@@ -21,34 +21,22 @@ var ob = new OpenBazaarAPI({
 });
 
 // log into your openbazaar server
-ob.login(function(err) {
+ob.login(function(err, code, body) {
   if (err) throw err;
 
   // get your openbazaar profile description
-  ob.profile(function(err, reply) {
+  ob.get_profile(function(err, code, body) {
     if (err) throw err;
-    console.log(reply.profile.short_description);
+    console.log(body.profile.short_description);
 
     // get someone else's profile
-    ob.profile(function('a06aa22a38f0e62221ab74464c311bd88305f88c', err, reply) {
+    ob.get_profile({'guid': 'a06aa22a38f0e62221ab74464c311bd88305f88c'}, function(err, code, body) {
       if (err) throw err;
-      console.log(reply.profile.website);
+      console.log(body.profile.website);
     });
   });
 });
 
-```
-
-
-### Convenience methods
-
-`ob.login` and `ob.profile` are simple wrappers to the OpenBazaar-Server API endpoints. You have to make sure that your app is logged into the OpenBazaar-Server before you can call `ob.profile`. If the OpenBazaar-Server restarts while your API client is running, your past authentication cookies are invalidated and you have to log in again. This means you have to write extra code to check the state of your login, which can be annoying. To make your job easier, I've made a convenience method for getting information from the API. Just call it and expect a response. Calling .get() will ensure that you have a valid authentication cookie and you're able to receive information from the API.
-
-```js
-ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, reply) {
-  if (err) throw err;
-  console.log(reply.profile.handle);
-});
 ```
 
 
@@ -94,7 +82,7 @@ ob.get('profile', 'a06aa22a38f0e62221ab74464c311bd88305f88c', function(err, repl
 * [x] /api/v1/upload_image
 * [x] /api/v1/complete_order
 * [x] /api/v1/settings
-* [ ] /api/v1/mark_notification_as_read
+* [x] /api/v1/mark_notification_as_read
 * [ ] /api/v1/broadcast
 * [ ] /api/v1/mark_chat_message_as_read
 * [ ] /api/v1/check_for_payment

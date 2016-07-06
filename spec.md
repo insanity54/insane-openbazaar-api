@@ -116,7 +116,6 @@ Log in to the OpenBazaar API server
 
 + Request Authorized (application/x-www-form-urlencoded)
     + Headers
-8
     + Body
         id=f4942393f5d3b9b53b4b58e00f65b9afc7576c74
 
@@ -127,6 +126,34 @@ Log in to the OpenBazaar API server
         {
             "success": true
         }
+
+
+# Mark Notification As Read [/api/v1/mark_notification_as_read]
+
+## Mark Notification As Read [POST]
+
++ Attributes
+    + id (string) - the ID of the notification to mark read
+
++ Request Authorized with auth cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        id=d8ee879dd2785dfd7de23cbdcabf579150272fcd
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {
+            "success": true
+        }
+
+
 
 
 # Images [/api/v1/get_image]
