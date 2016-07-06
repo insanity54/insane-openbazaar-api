@@ -21,8 +21,8 @@
   ],
   "author": "Chris Grimmett <chris@grimtech.net>",
   "license": {
-    "type": "Public Domain",
-    "url": "http://github.com/insanity54/insane-openbazaar-api/raw/master/UNLICENSE"
+    "type": "MIT",
+    "url": "http://github.com/insanity54/insane-openbazaar-api/raw/master/LICENSE"
   },
   "bugs": {
     "url": "https://github.com/insanity54/insane-openbazaar-api/issues"
