@@ -17,7 +17,10 @@ var OpenBazaarAPI = require('insane-openbazaar-api');
 // create a new instance
 var ob = new OpenBazaarAPI({
   "username": "chris_grimmett", // the username to your openbazaar server
-  "password": "rosebud"         // the password to your openbazaar server
+  "password": "rosebud",        // the password to your openbazaar server
+  "proto": "https",             // optional. defaults to http
+  "host" : "localhost",         // optional. defaults to 127.0.0.1
+  "port" : "18469"              // optional. defaults to 18469
 });
 
 // log into your openbazaar server
