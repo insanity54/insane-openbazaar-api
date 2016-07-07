@@ -65,12 +65,6 @@ var Api = function Api(options) {
     };
   }
 
-  if (typeof self.opts.username === 'undefined')
-    throw new Error('username must be passed to insane-openbazaar-api constructor. got '+self.opts.username);
-
-  if (typeof self.opts.password === 'undefined')
-    throw new Error('password must be passed to insane-openbazaar-api constructor. got '+self.opts.password);
-
   if (/:\/\//.test(self.opts.proto))
     throw new Error('please remove the colon slash slash (://) from proto');
 
@@ -137,7 +131,8 @@ Api.prototype.request = function request(action, method, params, callback, optio
     // of appending to the uri. also use x-www-form-urlencoded instead of json
     debug('action=%s', action);
     if (action === 'login') {
-      if (typeof params['username'] === 'undefined' || typeof params['password'] === 'undefined') return callback(new Error('username and password are required to log in', null, null));
+      if (typeof params['username'] === 'undefined' || typeof params['password'] === 'undefined')
+        return callback(new Error('username and password are required to log in', null, null));
       body = qs.stringify({'username': params['username'], 'password': params['password']});
     }
     else {
