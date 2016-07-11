@@ -101,9 +101,7 @@ describe('api', function() {
         apiOptions = {
           "proto": process.env.OB_PROTO,
           "port": process.env.OB_PORT,
-          "host": process.env.OB_HOST,
-          "username": process.env.OB_USERNAME,
-          "password": process.env.OB_PASSWORD
+          "host": process.env.OB_HOST
         }
         if (apiOptions.proto === 'https') {
           apiOptions.ca = path.join(__dirname, '..', 'blobs', 'rootCA.3.crt');
@@ -111,9 +109,7 @@ describe('api', function() {
       }
       else {
         apiOptions = {
-          "password": 'test',
-          "username": 'test',
-          "port": 3000,
+          "port": 3000
         };
       }
 
@@ -236,6 +232,87 @@ describe('api', function() {
       });
     });
 
+    describe('Authentication', function() {
+      describe('login', function() {
+
+        it('should bork if not receiving username and password', function(done) {
+          ob.login(function(err, code, body) {
+            debug(err);
+            assert.match(err, /params are required/);
+            assert.isNull(code);
+            assert.isNull(body);
+            done();
+          });
+        });
+
+        it('should log in to the openbazaar server', function(done) {
+          ob.login({
+            username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
+            password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
+          }, function(err, status, body) {
+            assert.isNull(err);
+            assert.equal(status, 200);
+            assert.isDefined(body);
+            done();
+          });
+        });
+
+        it('should NOT create a headers.txt file containing cookie', function(done) {
+          // 'headers.txt exists. Are you using an old version of insane-openbazaar-api? please update!'
+          ob.login({
+            username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
+            password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
+          }, function(err, status, body) {
+            assert.isNull(err);
+            assert.equal(status, 200);
+            assert.isDefined(body);
+            assert.throws(
+              (function() {
+                // node versions 0.10 and below do not have fs.accessSync()
+                if (semver.satisfies(process.versions.node, '0.6 - 0.10')) {
+                  if (!fs.existsSync(path.join(__dirname, '..', 'headers.txt'))) throw new Error('ENOENT');
+                } else {
+                  fs.accessSync(path.join(__dirname, '..', 'headers.txt'));
+                }
+              }), /ENOENT/);
+            done();
+          });
+        });
+
+        it('should store authentication cookie in memory', function(done) {
+          ob.login({
+            username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
+            password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
+          }, function(err, status, body) {
+            assert.isNull(err);
+            assert.equal(status, 200);
+            assert.isDefined(body);
+            assert.match(ob.cookieString, /[a-f0-9]{32}/);
+            done();
+          });
+        });
+      });
+      describe('follow', function() {
+        it('should accept a guid to follow and callback with success', function(done) {
+          this.timeout(5000);
+          ob.follow({"guid": "d47eea06209d3da8dc10937399a9cf1c3dd4dca4"}, function(err, code, body) {
+            assert.isNull(err);
+            assert.equal(code, 200);
+            assert.isObject(body);
+            assert.isTrue(body.success);
+            done();
+          });
+        });
+        it('should bork if no params received', function(done) {
+          ob.follow(function(err, code, body) {
+            assert.match(err, /params are required/);
+            assert.isNull(code);
+            assert.isNull(body);
+            done();
+          });
+        });
+      });
+    })
 
     describe('Network requests', function() {
       beforeEach(function(done) {
@@ -583,81 +660,6 @@ describe('api', function() {
       });
 
       describe('POST requests', function() {
-        describe('login', function() {
-
-          it('should bork if not receiving username and password', function(done) {
-            assert.throws((function() {
-              ob.login(function(err, code, body) {});
-            }, /username and password/));
-          });
-
-          it('should log in to the openbazaar server', function(done) {
-            ob.login({
-              username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
-              password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
-            }, function(err, status, body) {
-              assert.isNull(err);
-              assert.equal(status, 200);
-              assert.isDefined(body);
-              done();
-            });
-          });
-
-          it('should NOT create a headers.txt file containing cookie', function(done) {
-            // 'headers.txt exists. Are you using an old version of insane-openbazaar-api? please update!'
-            ob.login({
-              username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
-              password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
-            }, function(err, status, body) {
-              assert.isNull(err);
-              assert.equal(status, 200);
-              assert.isDefined(body);
-              assert.throws(
-                (function() {
-                  // node versions 0.10 and below do not have fs.accessSync()
-                  if (semver.satisfies(process.versions.node, '0.6 - 0.10')) {
-                    if (!fs.existsSync(path.join(__dirname, '..', 'headers.txt'))) throw new Error('ENOENT');
-                  } else {
-                    fs.accessSync(path.join(__dirname, '..', 'headers.txt'));
-                  }
-                }), /ENOENT/);
-              done();
-            });
-          });
-
-          it('should store authentication cookie in memory', function(done) {
-            ob.login({
-              username: process.env.OB_LIVE_TEST ? process.env.OB_USERNAME : 'test',
-              password: process.env.OB_LIVE_TEST ? process.env.OB_PASSWORD : 'test'
-            }, function(err, status, body) {
-              assert.isNull(err);
-              assert.equal(status, 200);
-              assert.isDefined(body);
-              assert.match(ob.cookieString, /[a-f0-9]{32}/);
-              done();
-            });
-          });
-        });
-        describe('follow', function() {
-          it('should accept a guid to follow and callback with success', function(done) {
-            this.timeout(5000);
-            ob.follow({"guid": "d47eea06209d3da8dc10937399a9cf1c3dd4dca4"}, function(err, code, body) {
-              assert.isNull(err);
-              assert.equal(code, 200);
-              assert.isObject(body);
-              assert.isTrue(body.success);
-              done();
-            });
-          });
-          it('should bork if no params received', function(done) {
-            ob.follow(function(err, code, body) {
-              assert.match(err, /params are required/);
-              assert.isNull(code);
-              assert.isNull(body);
-              done();
-            });
-          });
-        });
         describe('unfollow', function() {
           it('should take a guid and callback with success', function(done) {
             ob.unfollow({"guid": "d47eea06209d3da8dc10937399a9cf1c3dd4dca4"}, function(err, code, body) {
