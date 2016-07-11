@@ -1,6 +1,6 @@
 {
   "name": "insane-openbazaar-api",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "OpenBazaar API client for Node.",
   "main": "index.js",
   "scripts": {
