@@ -86,6 +86,93 @@ Log in to the OpenBazaar API server
             "success": true
         }
 
+# Check For Payment [/api/v1/check_for_payment]
+
+## Check For Payment [POST]
+
++ Attributes
+    + order_id (string) - string of the order to check
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        order_id=2006247e6d2d49c5d960dcaa1c0305e387577607
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
+
+
+# Broadcast [/api/v1/broadcast]
+
+## Send A Broadcast [POST]
+
++ Attributes
+    + message (string) - message to send to followers
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        message=thankyouverymuch
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true,
+            "peers reached": 5
+        }
+
+
+
+
+# Mark Chat Message As Read [/api/v1/mark_chat_message_as_read]
+
+## Mark a chat as read [POST]
+
++ Attributes
+    + guid (string) - message guid to be marked as read
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        guid=fe35be5ec8c07d07e347d7003021bdfa8630ca2f
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
+
+
+
 
 # Set Settings [/api/v1/settings]
 
