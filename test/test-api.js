@@ -1061,7 +1061,7 @@ describe('api', function() {
                             'order_id': '4d2a90ddb7ef5298bd8edfa627c18580914dfc85'
                         }, function(err, code, body) {
                             assert.isNull(err);
-                            assert.equal(200, code);
+                            assert.equal(code, 200);
                             assert.isObject(body);
                             assert.isTrue(body.success);
                             done();

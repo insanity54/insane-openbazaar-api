@@ -14,6 +14,13 @@ var debug = require('debug')('insane-openbazaar-api');
 // });
 
 
+function AuthorizationError(message) {
+    this.name = "AuthorizationError";
+    this.message = (message || "");
+}
+AuthorizationError.prototype = new Error();
+
+
 var JSONparse = function JSONparse(maybeJSON) {
   if (typeof maybeJSON === 'string') {
     try {

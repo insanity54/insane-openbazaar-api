@@ -174,6 +174,36 @@ Log in to the OpenBazaar API server
 
 
 
+
+# Dispute Contract [/api/v1/dispute_contract]
+
+## Dispute a Contract [POST]
+
++ Attributes
+    + order_id (string) - order id in which to open dispute
+
++ Request Unauthorized (application/x-www-form-urlencoded)
+
++ Response 404
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        order_id=4d2a90ddb7ef5298bd8edfa627c18580914dfc85
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
+
+
+
 # Set Settings [/api/v1/settings]
 
 ## Set Settings [POST]

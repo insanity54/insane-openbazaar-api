@@ -89,7 +89,7 @@ ob.login(function(err, code, body) {
 * [x] /api/v1/broadcast
 * [x] /api/v1/mark_chat_message_as_read
 * [x] /api/v1/check_for_payment
-* [ ] /api/v1/dispute_contract
+* [x] /api/v1/dispute_contract
 * [ ] /api/v1/close_dispute
 * [ ] /api/v1/release_funds
 * [ ] /api/v1/refund
