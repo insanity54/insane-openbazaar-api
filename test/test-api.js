@@ -241,9 +241,50 @@ describe('api', function() {
         });
 
         describe('Authentication', function() {
+            describe('Unauthenticated GET call', function() {
+              it('should callback with an error if receiving invalid or no auth cookie', function(done) {
+                  ob.cookieString = '';
+                  ob.get_profile(function(err, status, body) {
+                      debug('err=%s, status=%s, body=%s', err, status, body);
+                      assert.instanceOf(err, Error);
+                      assert.isNull(status);
+                      assert.isNull(body);
+                      done();
+                  });
+              });
+            });
+            describe('Unauthenticated POST call', function() {
+              it('should callback with an error if receiving invalid or no auth cookie', function(done) {
+                  ob.cookieString = '';
+                  ob.post_profile({
+                    "name": "Sunshine Martian",
+                    "location": "UNITED_STATES"
+                  }, function(err, status, body) {
+                      debug('err=%s, status=%s, body=%s', err, status, body);
+                      assert.instanceOf(err, Error);
+                      assert.isNull(status);
+                      assert.isNull(body);
+                      done();
+                  });
+              });
+            });
+            describe('Unauthenticated DELETE call', function() {
+              it('should callback with an error if receiving invalid or no auth cookie', function(done) {
+                  ob.cookieString = '';
+                  ob.delete_social_accounts({
+                    "account_type": "twitter"
+                  }, function(err, status, body) {
+                      debug('err=%s, status=%s, body=%s', err, status, body);
+                      assert.instanceOf(err, Error);
+                      assert.isNull(status);
+                      assert.isNull(body);
+                      done();
+                  });
+              });
+            });
             describe('login', function() {
 
-                it('should bork if not receiving username and password', function(done) {
+                it('should callback with error if not receiving username and password', function(done) {
                     ob.login(function(err, code, body) {
                         debug(err);
                         assert.match(err, /params are required/);
@@ -718,9 +759,9 @@ describe('api', function() {
                         });
                     });
                 });
-                describe('set_profile', function() {
+                describe('post_profile', function() {
                     it('should accept a profile object and return success', function(done) {
-                        ob.set_profile({
+                        ob.post_profile({
                             "name": "Sunshine Martian",
                             "location": "UNITED_STATES"
                         }, function(err, code, body) {
@@ -732,7 +773,7 @@ describe('api', function() {
                         });
                     });
                     it('should bork given no params', function(done) {
-                        ob.set_profile(function(err, code, body) {
+                        ob.post_profile(function(err, code, body) {
                             assert.isDefined(err);
                             assert.isNull(code);
                             assert.isNull(body);

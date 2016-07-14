@@ -355,6 +355,9 @@ Retrieve the user's profile
       }
 
 + Request without authentication cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
 + Response 401 (text/html)
     + Headers
         Date: Fri, 13 May 2016 23:59:58 GMT
@@ -363,6 +366,48 @@ Retrieve the user's profile
         Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
     + Body
         <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
+
+
+
+
+
+## Set Owner's Profile [POST]
+
++ Attributes
+    + profile (object) - profile object to set as new profile
+
++ Request without authentication cookie (application/x-www-form-urlencoded)
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+    + Body
+        name=Sunshine%20Martian&location=UNITED_STATES
+
++ Response 401 (text/html)
+    + Headers
+        Date: Fri, 13 May 2016 23:59:58 GMT
+        Content-Type: text/html
+        Server: TwistedWeb/16.1.0
+        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
+    + Body
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
+
+
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        name=Sunshine%20Martian&location=UNITED_STATES
+
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
 
 
 
@@ -560,6 +605,8 @@ Retrieve the user's profile
 
 
 
+
+
 ## Get Chat Messages [/api/v1/get_chat_messages]
 
 ## Retrieve Chat messages given a GUID [GET]
@@ -581,6 +628,41 @@ Retrieve the user's profile
 
 
 
+
+
+## Delete Social Accounts [/api/v1/social_accounts]
+
+## Delete user's social account given a type [DELETE]
+
++ Request Authorized with cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {"success": true}
+
+
++ Request Unauthorized without cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+
+
++ Response 401 (text/html)
+    + Headers
+        Date: Fri, 13 May 2016 23:59:58 GMT
+        Content-Type: text/html
+        Server: TwistedWeb/16.1.0
+        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
+    + Body
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
 
 
 

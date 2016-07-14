@@ -20,8 +20,8 @@ function heading() {
 heading "(POST) login"
 curl \
     --data "username=$OB_USERNAME&password=$OB_PASSWORD" \
-    --dump-header ./blobs/test.headers.login \
-    --trace ./blobs/test.trace.login \
+    --dump-header ../blobs/test.headers.login \
+    --trace ../blobs/test.trace.login \
     $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/login
 
 
@@ -29,9 +29,9 @@ curl \
 heading "(GET) get_image"
 curl \
     -L \
-    -b ./blobs/test.headers.login \
-    --dump-header ./blobs/test.headers.get_image \
-    --trace ./blobs/test.trace.get_image \
+    -b ../blobs/test.headers.login \
+    --dump-header ../blobs/test.headers.get_image \
+    --trace ../blobs/test.trace.get_image \
     $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/get_image
 
 
@@ -39,20 +39,20 @@ curl \
 heading "(POST) follow"
 curl \
     -L \
-    -b ./blobs/test.headers.login \
+    -b ../blobs/test.headers.login \
     -X POST \
     --data "guid=a06aa22a38f0e62221ab74464c311bd88305f88c" \
-    --dump-header ./blobs/test.headers.follow \
-    --trace ./blobs/test.trace.follow \
+    --dump-header ../blobs/test.headers.follow \
+    --trace ../blobs/test.trace.follow \
     $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/follow
 
 
 heading "(DELETE) social_accounts"
 curl \
     -L \
-    -b ./blobs/test.headers.login \
+    -b ../blobs/test.headers.login \
     -X DELETE \
     --data "account_type=twitter" \
-    --dump-header ./blobs/test.headers.social_accounts \
-    --trace ./blobs/test.trace.social_accounts \
+    --dump-header ../blobs/test.headers.social_accounts \
+    --trace ../blobs/test.trace.social_accounts \
     $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/social_accounts
