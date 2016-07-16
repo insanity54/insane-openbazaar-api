@@ -187,7 +187,8 @@ Api.prototype.request = function request(action, method, params, callback, optio
         });
     } else if (method == 'GET') {
         request_options.qs = params;
-        debug(request_options)
+        debug(params);
+        debug(request_options);
         Request.get(request_options, function(err, res, body) {
             debug('err=%s, res=%s, body=%s', err, res, body);
             body = JSONparse(body);

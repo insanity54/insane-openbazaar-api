@@ -567,7 +567,7 @@ Retrieve the user's profile
 
 
 
-## Get Notifications [/api/v1/get_notifications]
+# Get Notifications [/api/v1/get_notifications]
 
 ## Get current user's notifications [GET]
 
@@ -607,7 +607,7 @@ Retrieve the user's profile
 
 
 
-## Get Chat Messages [/api/v1/get_chat_messages]
+# Get Chat Messages [/api/v1/get_chat_messages]
 
 ## Retrieve Chat messages given a GUID [GET]
 
@@ -628,6 +628,421 @@ Retrieve the user's profile
 
 
 
+
+# Get list of followers [/api/v1/get_followers]
+
++ Parameters
+    + guid (string) - ID of the openbazaar profile to find followers of
+    + start (number) - follower number at which to start showing followers lsit
+
+## Get followers list [GET]
+
++ Request Authorized with no params
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+
+    + Response 200 (application/json)
+        + Headers
+            Date: Thu, 12 May 2016 07:11:41 GMT
+            Content-Type: application/json
+            Server: TwistedWeb/16.1.0
+        + Body
+            {
+                "count": 2,
+                "followers": [
+                    {
+                        "handle": "",
+                        "name": "Jewelry",
+                        "nsfw": false,
+                        "short_description": "A Bazaar Is Open. ",
+                        "avatar_hash": "a28d2f979b2325640fa88ae4acf3967c2aca1599",
+                        "guid": "d97cffbba4dfb38bfcdb6192e6ed0db6d33d242a"
+                    },
+                    {
+                        "handle": "",
+                        "name": "Bike Store",
+                        "nsfw": true,
+                        "short_description": "Do you like bikes? Do you like to purchase cool bike related apparel and equipment? ",
+                        "avatar_hash": "0f52078d6a9eaa9f040d10a5eabc4038268a01e6",
+                        "guid": "d6c982d6dd72d5a65614d424a9fb497406e7197c"
+                    }
+                ]
+            }
+
+
++ Request Authorized and with guid
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Parameters
+        guid=a06aa22a38f0e62221ab74464c311bd88305f88c
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {
+            "count": 20,
+            "followers": [
+                {
+                    "handle": "",
+                    "name": "Jewelry",
+                    "nsfw": false,
+                    "short_description": "A Bazaar Is Open. ",
+                    "avatar_hash": "a28d2f979b2325640fa88ae4acf3967c2aca1599",
+                    "guid": "d97cffbba4dfb38bfcdb6192e6ed0db6d33d242a"
+                },
+                {
+                    "handle": "",
+                    "name": "Bike Store",
+                    "nsfw": true,
+                    "short_description": "Do you like bikes? Do you like to purchase cool bike related apparel and equipment? ",
+                    "avatar_hash": "0f52078d6a9eaa9f040d10a5eabc4038268a01e6",
+                    "guid": "d6c982d6dd72d5a65614d424a9fb497406e7197c"
+                },
+                {
+                    "handle": "",
+                    "name": "HFX-Deals",
+                    "nsfw": false,
+                    "short_description": "Clearance sunglasses",
+                    "avatar_hash": "7ab98dfe3de789fed5efadfdeb28ee6a54fb5a34",
+                    "guid": "d3a43e67c8418dffdbf8fb623727baa9d55ac676"
+                },
+                {
+                    "handle": "",
+                    "name": "GiftCards4BTC",
+                    "nsfw": false,
+                    "short_description": "We strive to provide every customer with the experience  that meets all their needs.",
+                    "avatar_hash": "8dab19a30eb4d695118cdc61ec15352d3e2d4c54",
+                    "guid": "e22ec68c9428ee525667a848c40c16d1d205a7cc"
+                },
+                {
+                    "handle": "@rhythmandsounds",
+                    "name": "obhgfob6rqz66i4v6mqvs6mvx6r",
+                    "nsfw": false,
+                    "short_description": "Rhythm And Sounds finds unique pieces of history and makes them available to the world.",
+                    "avatar_hash": "a2f24ce02c0db00ffe06072b18760eeda08c694d",
+                    "guid": "e4c4e217f73f104712bc9c81b08262639d98a943"
+                },
+                {
+                    "handle": "",
+                    "name": "{Bargains for Bitcoin}",
+                    "nsfw": false,
+                    "short_description": "Searching for something specific, we may be able to find it, just ask. We purchase e-gift codes in bulk and pass the savings onto you.",
+                    "avatar_hash": "c70a1dcdaa23c9db3971abbbee7d99772898fb94",
+                    "guid": "796094be19f0bcf4d1fbc401021a2390b330c155"
+                },
+                {
+                    "handle": "",
+                    "name": "Electric Bikes store",
+                    "nsfw": false,
+                    "short_description": "Folding Electric Bikes. Hybrid technologies",
+                    "avatar_hash": "71938cb7a8c9a29f9041f5576f17a67de936a6bf",
+                    "guid": "d39052c3c4887d4d2dc6a630dc7a28b977c171af"
+                },
+                {
+                    "handle": "",
+                    "name": "ob9bd3fushid358zedo73gi7ldi",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "",
+                    "guid": "d8d968badcd7906fd875648c4bcdcdcec3fbf8d8"
+                },
+                {
+                    "handle": "",
+                    "name": "Trader Joe's",
+                    "nsfw": false,
+                    "short_description": "selling a lenovo w530",
+                    "avatar_hash": "",
+                    "guid": "c06bec8ee15cb3a8d1fb5bd3ec6f6607c6ebbfde"
+                },
+                {
+                    "handle": "",
+                    "name": "BazaarCity.io",
+                    "nsfw": false,
+                    "short_description": "BazaarCity.io offers easy, fast and reliable OpenBazaar Hosting and a free Moderation Service.",
+                    "avatar_hash": "5920b60f25011dd4b3329df48e4340508bdcb0b2",
+                    "guid": "948923d1e92c3e956cecfb7536fe5969f37cfcfb"
+                },
+                {
+                    "handle": "",
+                    "name": "Satoshi_Island",
+                    "nsfw": true,
+                    "short_description": "Eliquid - CBD - Vaporizers ",
+                    "avatar_hash": "b9ad98e667b17572c808234072d04d6120f947ed",
+                    "guid": "bf11c24d42fdd513625a48d8d08e6bfca1c43604"
+                },
+                {
+                    "handle": "",
+                    "name": "Berkey Water Filters",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "7cdf1ed866b1eb8ff5fc235216f7735e5e51fb48",
+                    "guid": "81be65a677f024f9037c5cfbe5cf1d695dac4a59"
+                },
+                {
+                    "handle": "",
+                    "name": "Bitcoin Stickers &amp; Such",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "11071853f734fe20dda57084d10ea9daf3758434",
+                    "guid": "cd10361fc205a9bf538d1936a5b66eb376bde1b5"
+                },
+                {
+                    "handle": "@bitcoinbazar",
+                    "name": "Bitcoin Bazar",
+                    "nsfw": false,
+                    "short_description": "High Quality &amp; Low Cost \"Self Help / How To\" Guides",
+                    "avatar_hash": "ce2705b58e0ee2fc6842537e10a5dc4eb91e49dd",
+                    "guid": "293eb9d6542d81e6e6e7fe4386a390e7eb767f8b"
+                },
+                {
+                    "handle": "",
+                    "name": "obj1ku00v8ifwler0sgk00sh5mi",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "",
+                    "guid": "2afd8f6ac0d46d622c2b4102b5cd3f2dd1be4653"
+                },
+                {
+                    "handle": "",
+                    "name": "TPi",
+                    "nsfw": false,
+                    "short_description": "wertewandeln &amp; handeln",
+                    "avatar_hash": "54d216b68356f120771a4a6d5e9922a7dadef1fe",
+                    "guid": "a3ef1b88293c321eddf179421cfc3255a6476755"
+                },
+                {
+                    "handle": "@cmosthestore",
+                    "name": "Cmos the Store",
+                    "nsfw": false,
+                    "short_description": "Simply the best!",
+                    "avatar_hash": "8d1281c49fe1fedfd37beef3454bde30b1aab414",
+                    "guid": "074265875f569b33b68dbee6834d1c4fd2438fa0"
+                },
+                {
+                    "handle": "",
+                    "name": "OstrichEgg",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "b6b7767d5623b44a6d24469e84965e1c5a34d2dc",
+                    "guid": "88996ff882957925162b9776092c6f2260950c01"
+                },
+                {
+                    "handle": "",
+                    "name": "Brunswick Biltong",
+                    "nsfw": true,
+                    "short_description": "Traditional South African Biltong made in Nelson New Zealand. Check out brunswickbiltong.com ",
+                    "avatar_hash": "30215972a7dcabf2e0638d0ed785e7939dd14bf0",
+                    "guid": "5c666d7603e587b1cfddd2f80b18b8cf7771cb10"
+                },
+                {
+                    "handle": "@buyerprotection",
+                    "name": "Buyer Protection",
+                    "nsfw": false,
+                    "short_description": "FREE 24/7 MOD, LIMITED TIME. Offer buyers peace of mind with our Buyer Protection program.",
+                    "avatar_hash": "a130f5363bf797bd388a0e215010f1132ae6ac78",
+                    "guid": "dcbfcec25dab4360e033caa8b27c3233a286e663"
+                }
+            ]
+        }
+
+
+
++ Request Authorized with guid and start params
+    + Parameters
+        guid=a06aa22a38f0e62221ab74464c311bd88305f88c&start=5
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {
+            "count": 20,
+            "followers": [
+                {
+                    "handle": "",
+                    "name": "Jewelry",
+                    "nsfw": false,
+                    "short_description": "A Bazaar Is Open. ",
+                    "avatar_hash": "a28d2f979b2325640fa88ae4acf3967c2aca1599",
+                    "guid": "d97cffbba4dfb38bfcdb6192e6ed0db6d33d242a"
+                },
+                {
+                    "handle": "",
+                    "name": "Bike Store",
+                    "nsfw": true,
+                    "short_description": "Do you like bikes? Do you like to purchase cool bike related apparel and equipment? ",
+                    "avatar_hash": "0f52078d6a9eaa9f040d10a5eabc4038268a01e6",
+                    "guid": "d6c982d6dd72d5a65614d424a9fb497406e7197c"
+                },
+                {
+                    "handle": "",
+                    "name": "HFX-Deals",
+                    "nsfw": false,
+                    "short_description": "Clearance sunglasses",
+                    "avatar_hash": "7ab98dfe3de789fed5efadfdeb28ee6a54fb5a34",
+                    "guid": "d3a43e67c8418dffdbf8fb623727baa9d55ac676"
+                },
+                {
+                    "handle": "",
+                    "name": "GiftCards4BTC",
+                    "nsfw": false,
+                    "short_description": "We strive to provide every customer with the experience  that meets all their needs.",
+                    "avatar_hash": "8dab19a30eb4d695118cdc61ec15352d3e2d4c54",
+                    "guid": "e22ec68c9428ee525667a848c40c16d1d205a7cc"
+                },
+                {
+                    "handle": "@rhythmandsounds",
+                    "name": "obhgfob6rqz66i4v6mqvs6mvx6r",
+                    "nsfw": false,
+                    "short_description": "Rhythm And Sounds finds unique pieces of history and makes them available to the world.",
+                    "avatar_hash": "a2f24ce02c0db00ffe06072b18760eeda08c694d",
+                    "guid": "e4c4e217f73f104712bc9c81b08262639d98a943"
+                },
+                {
+                    "handle": "",
+                    "name": "{Bargains for Bitcoin}",
+                    "nsfw": false,
+                    "short_description": "Searching for something specific, we may be able to find it, just ask. We purchase e-gift codes in bulk and pass the savings onto you.",
+                    "avatar_hash": "c70a1dcdaa23c9db3971abbbee7d99772898fb94",
+                    "guid": "796094be19f0bcf4d1fbc401021a2390b330c155"
+                },
+                {
+                    "handle": "",
+                    "name": "Electric Bikes store",
+                    "nsfw": false,
+                    "short_description": "Folding Electric Bikes. Hybrid technologies",
+                    "avatar_hash": "71938cb7a8c9a29f9041f5576f17a67de936a6bf",
+                    "guid": "d39052c3c4887d4d2dc6a630dc7a28b977c171af"
+                },
+                {
+                    "handle": "",
+                    "name": "ob9bd3fushid358zedo73gi7ldi",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "",
+                    "guid": "d8d968badcd7906fd875648c4bcdcdcec3fbf8d8"
+                },
+                {
+                    "handle": "",
+                    "name": "Trader Joe's",
+                    "nsfw": false,
+                    "short_description": "selling a lenovo w530",
+                    "avatar_hash": "",
+                    "guid": "c06bec8ee15cb3a8d1fb5bd3ec6f6607c6ebbfde"
+                },
+                {
+                    "handle": "",
+                    "name": "BazaarCity.io",
+                    "nsfw": false,
+                    "short_description": "BazaarCity.io offers easy, fast and reliable OpenBazaar Hosting and a free Moderation Service.",
+                    "avatar_hash": "5920b60f25011dd4b3329df48e4340508bdcb0b2",
+                    "guid": "948923d1e92c3e956cecfb7536fe5969f37cfcfb"
+                },
+                {
+                    "handle": "",
+                    "name": "Satoshi_Island",
+                    "nsfw": true,
+                    "short_description": "Eliquid - CBD - Vaporizers ",
+                    "avatar_hash": "b9ad98e667b17572c808234072d04d6120f947ed",
+                    "guid": "bf11c24d42fdd513625a48d8d08e6bfca1c43604"
+                },
+                {
+                    "handle": "",
+                    "name": "Berkey Water Filters",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "7cdf1ed866b1eb8ff5fc235216f7735e5e51fb48",
+                    "guid": "81be65a677f024f9037c5cfbe5cf1d695dac4a59"
+                },
+                {
+                    "handle": "",
+                    "name": "Bitcoin Stickers &amp; Such",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "11071853f734fe20dda57084d10ea9daf3758434",
+                    "guid": "cd10361fc205a9bf538d1936a5b66eb376bde1b5"
+                },
+                {
+                    "handle": "@bitcoinbazar",
+                    "name": "Bitcoin Bazar",
+                    "nsfw": false,
+                    "short_description": "High Quality &amp; Low Cost \"Self Help / How To\" Guides",
+                    "avatar_hash": "ce2705b58e0ee2fc6842537e10a5dc4eb91e49dd",
+                    "guid": "293eb9d6542d81e6e6e7fe4386a390e7eb767f8b"
+                },
+                {
+                    "handle": "",
+                    "name": "obj1ku00v8ifwler0sgk00sh5mi",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "",
+                    "guid": "2afd8f6ac0d46d622c2b4102b5cd3f2dd1be4653"
+                },
+                {
+                    "handle": "",
+                    "name": "TPi",
+                    "nsfw": false,
+                    "short_description": "wertewandeln &amp; handeln",
+                    "avatar_hash": "54d216b68356f120771a4a6d5e9922a7dadef1fe",
+                    "guid": "a3ef1b88293c321eddf179421cfc3255a6476755"
+                },
+                {
+                    "handle": "@cmosthestore",
+                    "name": "Cmos the Store",
+                    "nsfw": false,
+                    "short_description": "Simply the best!",
+                    "avatar_hash": "8d1281c49fe1fedfd37beef3454bde30b1aab414",
+                    "guid": "074265875f569b33b68dbee6834d1c4fd2438fa0"
+                },
+                {
+                    "handle": "",
+                    "name": "OstrichEgg",
+                    "nsfw": false,
+                    "short_description": "",
+                    "avatar_hash": "b6b7767d5623b44a6d24469e84965e1c5a34d2dc",
+                    "guid": "88996ff882957925162b9776092c6f2260950c01"
+                },
+                {
+                    "handle": "",
+                    "name": "Brunswick Biltong",
+                    "nsfw": true,
+                    "short_description": "Traditional South African Biltong made in Nelson New Zealand. Check out brunswickbiltong.com ",
+                    "avatar_hash": "30215972a7dcabf2e0638d0ed785e7939dd14bf0",
+                    "guid": "5c666d7603e587b1cfddd2f80b18b8cf7771cb10"
+                },
+                {
+                    "handle": "@buyerprotection",
+                    "name": "Buyer Protection",
+                    "nsfw": false,
+                    "short_description": "FREE 24/7 MOD, LIMITED TIME. Offer buyers peace of mind with our Buyer Protection program.",
+                    "avatar_hash": "a130f5363bf797bd388a0e215010f1132ae6ac78",
+                    "guid": "dcbfcec25dab4360e033caa8b27c3233a286e663"
+                }
+            ]
+        }
+
++ Request Unauthorized without cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+
++ Response 401 (text/html)
+    + Headers
+        Date: Fri, 13 May 2016 23:59:58 GMT
+        Content-Type: text/html
+        Server: TwistedWeb/16.1.0
+        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
+    + Body
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
 
 
 ## Delete Social Accounts [/api/v1/social_accounts]
