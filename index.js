@@ -177,12 +177,12 @@ Api.prototype.request = function request(action, method, params, callback, optio
         Request.get(request_options, function(err, res, body) {
             debug('err=%s, res=%s, body=%s', err, res, body);
             body = utils.JSONparse(body);
-            if (isAuthError(body)) return callback(new errors.AuthorizationError(body), null, null);
+            if (utils.isAuthError(body)) return callback(new errors.AuthorizationError(body), null, null);
             return callback(err, res.statusCode, body);
         });
     } else if (method == 'DELETE') {
         Request.del(request_options, function(err, res, body) {
-            if (isAuthError(body)) return callback(new errors.AuthorizationError(body), null, null);
+            if (utils.isAuthError(body)) return callback(new errors.AuthorizationError(body), null, null);
             return callback(err, res.statusCode, body);
         });
     }
