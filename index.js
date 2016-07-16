@@ -5,6 +5,9 @@ var _ = require('underscore');
 var path = require('path');
 var Request = require('request');
 var qs = require('qs');
+var util = require('util');
+var errors = require('./lib/errors');
+var utils = require('./lib/utils');
 var debug = require('debug')('insane-openbazaar-api');
 // require('request-debug')(Request, function(type, data, r) {
 //     // put your request or response handling logic here
@@ -14,27 +17,8 @@ var debug = require('debug')('insane-openbazaar-api');
 // });
 
 
-var AuthorizationError = function AuthorizationError(message) {
-    this.name = "AuthorizationError";
-    this.message = (message || "");
-}
-AuthorizationError.prototype = new Error();
-
-var isAuthError = function isAuthError(body) {
-    return /Authorization Error/.test(body);
-}
 
 
-var JSONparse = function JSONparse(maybeJSON) {
-    if (typeof maybeJSON === 'string') {
-        try {
-            maybeJSON = JSON.parse(maybeJSON);
-        } catch (e) {
-            return maybeJSON;
-        }
-    }
-    return maybeJSON;
-}
 
 
 /**
@@ -71,6 +55,7 @@ var Api = function Api(options) {
 
     if (!_.contains(['https', 'http'], self.opts.proto))
         throw new Error('proto must be either http or https');
+
 }
 
 
@@ -160,13 +145,13 @@ Api.prototype.request = function request(action, method, params, callback, optio
             }
 
             if (body) {
-                body = JSONparse(body);
+                body = utils.JSONparse(body);
                 if (typeof body.success !== 'undefined') {
                     if (body.success == false) {
                         return callback(new Error(body.reason), null, body);
                     }
                 }
-                if (isAuthError(body)) return callback(new AuthorizationError(body), null, null);
+                if (utils.isAuthError(body)) return callback(new errors.AuthorizationError(body), null, null);
             }
 
             // save the auth cookie, if this was a login
@@ -191,13 +176,13 @@ Api.prototype.request = function request(action, method, params, callback, optio
         debug(request_options);
         Request.get(request_options, function(err, res, body) {
             debug('err=%s, res=%s, body=%s', err, res, body);
-            body = JSONparse(body);
-            if (isAuthError(body)) return callback(new AuthorizationError(body), null, null);
+            body = utils.JSONparse(body);
+            if (isAuthError(body)) return callback(new errors.AuthorizationError(body), null, null);
             return callback(err, res.statusCode, body);
         });
     } else if (method == 'DELETE') {
         Request.del(request_options, function(err, res, body) {
-            if (isAuthError(body)) return callback(new AuthorizationError(body), null, null);
+            if (isAuthError(body)) return callback(new errors.AuthorizationError(body), null, null);
             return callback(err, res.statusCode, body);
         });
     }
