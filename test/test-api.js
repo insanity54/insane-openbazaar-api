@@ -507,7 +507,7 @@ describe('api', function() {
                 describe('get_chat_messages', function() {
                     it('should callback with array of chats', function(done) {
                         ob.get_chat_messages({
-                            'guid': 'd47eea06209d3da8dc10937399a9cf1c3dd4dca4'
+                            'guid': '98009442a440ef5ec0fbe4e1edab15afaaa2250d'
                         }, function(err, code, body) {
                             assert.isNull(err);
                             assert.equal(code, 200);

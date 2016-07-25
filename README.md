@@ -90,9 +90,9 @@ ob.login(function(err, code, body) {
 * [x] /api/v1/mark_chat_message_as_read
 * [x] /api/v1/check_for_payment
 * [x] /api/v1/dispute_contract
-* [ ] /api/v1/close_dispute
-* [ ] /api/v1/release_funds
-* [ ] /api/v1/refund
+* [x] /api/v1/close_dispute
+* [x] /api/v1/release_funds
+* [x] /api/v1/refund
 * [ ] /api/v1/mark_discussion_as_read
 
 

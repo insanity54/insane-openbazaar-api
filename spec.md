@@ -86,6 +86,144 @@ Log in to the OpenBazaar API server
             "success": true
         }
 
+
+
+
+# Close Dispute [/api/v1/close_dispute]
+
+## Complete Order [POST]
+
++ Attributes
+    + order_id (string) - string of the order dispute to close
+
++ Request without authentication cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
++ Response 401 (text/html)
+    + Headers
+        Date: Fri, 13 May 2016 23:59:58 GMT
+        Content-Type: text/html
+        Server: TwistedWeb/16.1.0
+        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
+    + Body
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
+
+
++ Request Authorized with auth cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        order_id=4d2a90ddb7ef5298bd8edfa627c18580914dfc85
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {
+            "success": true
+        }
+
+
+
+
+
+
+# Release Funds [/api/v1/release_funds]
+
+## Release Funds [POST]
+
++ Attributes
+    + order_id (string) - string of the order of which to release funds
+
++ Request without authentication cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
++ Response 401 (text/html)
+    + Headers
+        Date: Fri, 13 May 2016 23:59:58 GMT
+        Content-Type: text/html
+        Server: TwistedWeb/16.1.0
+        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
+    + Body
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
+
+
++ Request Authorized with auth cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        order_id=4d2a90ddb7ef5298bd8edfa627c18580914dfc85
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {
+            "success": true
+        }
+
+
+
+
+
+
+
+# Refund [/api/v1/refund]
+
+## Refund [POST]
+
++ Attributes
+    + order_id (string) - string of the order to refund
+
++ Request without authentication cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
++ Response 401 (text/html)
+    + Headers
+        Date: Fri, 13 May 2016 23:59:58 GMT
+        Content-Type: text/html
+        Server: TwistedWeb/16.1.0
+        Set-Cookie: TWISTED_SESSION=bffa6254e7a747b57b6309af77e1c4bf; Path=/
+    + Body
+        <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
+
+
++ Request Authorized with auth cookie
+    + Headers
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        order_id=4d2a90ddb7ef5298bd8edfa627c18580914dfc85
+
++ Response 200 (application/json)
+    + Headers
+        Date: Thu, 12 May 2016 07:11:41 GMT
+        Content-Type: application/json
+        Server: TwistedWeb/16.1.0
+    + Body
+        {
+            "success": true
+        }
+
+
+
+
+
+
+
+
 # Check For Payment [/api/v1/check_for_payment]
 
 ## Check For Payment [POST]
@@ -140,6 +278,8 @@ Log in to the OpenBazaar API server
             "success": true,
             "peers reached": 5
         }
+
+
 
 
 
@@ -607,13 +747,18 @@ Retrieve the user's profile
 
 
 
-# Get Chat Messages [/api/v1/get_chat_messages]
+# Get Chat Messages [/api/v1/get_chat_messages{guid}]
 
 ## Retrieve Chat messages given a GUID [GET]
+
++ Parameters
+    + guid (string) - Openbazaar GUID of a user who you have sent a message to or received a message from
 
 + Request
     + Headers
         Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Parameters
+        guid=98009442a440ef5ec0fbe4e1edab15afaaa2250d
 
 + Response 200 (application/json)
     + Headers
@@ -622,8 +767,16 @@ Retrieve the user's profile
         Server: TwistedWeb/16.1.0
     + Body
         [
-          "yeah",
-          "cool"
+          {
+              "outgoing": true,
+              "handle": "",
+              "read": false,
+              "timestamp": 1469317230.470795,
+              "avatar_hash": "",
+              "message": "greets greets greets",
+              "guid": "98009442a440ef5ec0fbe4e1edab15afaaa2250d",
+              "id": "6hquk18skh4z7z07ndzccjtt9"
+          }
         ]
 
 
