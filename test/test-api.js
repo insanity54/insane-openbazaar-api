@@ -363,11 +363,11 @@ describe('api', function() {
                 describe('get_image', function() {
                     it('should return a raw image', function(done) {
                         ob.get_image({
-                            "hash": '55456e9efbafb5139977d1f86313eaac3293a88b'
+                            "hash": '6a37f9f18b1d064debc5908f84153124fc220e0c'
                         }, function(err, code, body) {
                             assert.isNull(err);
-                            assert.equal(code, 200);
-                            assert.isNumber(body);
+                            assert.equal(code, 404);
+                            assert.match(body, /Sorry\. No luck finding/)
                             done();
                         });
                     });
@@ -381,7 +381,7 @@ describe('api', function() {
                     });
                 });
                 describe('get_profile', function() {
-                    it('should accept a guid and return a profile object', function(done) {
+                    it('should accept a guid and callback with a profile object', function(done) {
                         this.timeout(10000);
                         ob.get_profile({
                             'guid': 'a06aa22a38f0e62221ab74464c311bd88305f88c'
@@ -390,7 +390,7 @@ describe('api', function() {
                             assert.equal(code, 200);
                             assert.isObject(body);
                             assert.isString(body.profile.short_description);
-                            assert.match(body.profile.short_description, /Trade free/);
+                            assert.isNumber(body.profile.primary_color);
                             done();
                         });
                     });

@@ -413,17 +413,19 @@ Log in to the OpenBazaar API server
 
 
 
-# Images [/api/v1/get_image]
+# Images [/api/v1/get_image{hash}]
+
++ Parameters
+    + hash (string) - ID of the image to look up
 
 ## Retrieve image [GET]
 
-+ Request Unauthorized no auth cookie
-+ Response 404
 
-
-+ Request Authorized with auth cookie, but no parameters sent
++ Request Authorized with auth cookie, but no matching image
     + Headers
         Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Parameters
+        hash=6a37f9f18b1d064debc5908f84153124fc220e0c
 
 + Response 404 (text/html)
     + Headers
@@ -516,6 +518,22 @@ Retrieve the user's profile
 + Attributes
     + profile (object) - profile object to set as new profile
 
++ Request Authorized (application/x-www-form-urlencoded)
+    + Headers
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+    + Body
+        name=Sunshine%20Martian&location=UNITED_STATES
+
+
++ Response 200 (application/json)
+    + Headers
+        Set-Cookie:
+    + Body
+        {
+            "success": true
+        }
+
+
 + Request without authentication cookie (application/x-www-form-urlencoded)
     + Headers
         Content-Type: application/x-www-form-urlencoded
@@ -533,20 +551,7 @@ Retrieve the user's profile
         <html><body><div><span style="color:red">Authorization Error</span></div><h2>Permission Denied</h2></body></html>
 
 
-+ Request Authorized (application/x-www-form-urlencoded)
-    + Headers
-        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
-    + Body
-        name=Sunshine%20Martian&location=UNITED_STATES
 
-
-+ Response 200 (application/json)
-    + Headers
-        Set-Cookie:
-    + Body
-        {
-            "success": true
-        }
 
 
 

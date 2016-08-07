@@ -25,6 +25,14 @@ curl \
     $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/login
 
 
+heading "(GET) get_notifications"
+curl \
+    -L \
+    -b ../blobs/test.headers.login \
+    --dump-header ../blobs/test.headers.get_notifications \
+    --trace ../blobs/test.trace.get_notifications \
+    $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/get_notifications
+
 
 heading "(GET) get_image"
 curl \
@@ -32,8 +40,8 @@ curl \
     -b ../blobs/test.headers.login \
     --dump-header ../blobs/test.headers.get_image \
     --trace ../blobs/test.trace.get_image \
-    $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/get_image
-
+    -o ../blobs/test.image.png \
+    $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/get_image?hash=6a37f9f18b1d064debc5908f84153124fc220e0c
 
 
 heading "(POST) follow"
