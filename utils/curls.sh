@@ -41,7 +41,7 @@ curl \
     --dump-header ../blobs/test.headers.get_image \
     --trace ../blobs/test.trace.get_image \
     -o ../blobs/test.image.png \
-    $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/get_image?hash=6a37f9f18b1d064debc5908f84153124fc220e0c
+    $OB_PROTO://$OB_HOST:$OB_PORT/api/v1/get_image?hash=a37f9f18b1d064debc5908f84153124fc220e0c
 
 
 heading "(POST) follow"

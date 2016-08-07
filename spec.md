@@ -412,28 +412,27 @@ Log in to the OpenBazaar API server
 
 
 
+# Image [/api/v1/get_image{?hash}]
 
-# Images [/api/v1/get_image{hash}]
+
+## Retrieve Image [GET]
+Retrieves an image
 
 + Parameters
-    + hash (string) - ID of the image to look up
-
-## Retrieve image [GET]
+    + hash (string) Which image to retrieve
 
 
-+ Request Authorized with auth cookie, but no matching image
-    + Headers
-        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
++ Request for unknown image hash
     + Parameters
-        hash=6a37f9f18b1d064debc5908f84153124fc220e0c
-
-+ Response 404 (text/html)
+        hash: beefbeefbeefbeef000beefbeefdead
     + Headers
-        HTTP/1.1 404 Not Found
-        Transfer-Encoding: chunked
-        Date: Thu, 09 Jun 2016 13:16:18 GMT
-        Content-Type: text/html; charset=utf-8
-        Server: TwistedWeb/16.1.0
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Cookie: TWISTED_SESSION=afeafefa838afae8fae838a938ae83a8
+
++ Response 404
+    + Headers
+        Date: Sun, 07 Aug 2016 15:50:00 GMT
     + Body
         <html>
           <head><title>404 - No Such Resource</title></head>
@@ -445,10 +444,18 @@ Log in to the OpenBazaar API server
 
 
 
-# Owner's Profile [/api/v1/profile]
 
-Retrieve the user's profile
 
+
+
+
+
+
+
+
+
+
+# Profliel [/api/v1/get_profile]
 
 ## Retrieve Owner's Profile [GET]
 

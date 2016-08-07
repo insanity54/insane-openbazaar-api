@@ -361,13 +361,13 @@ describe('api', function() {
                 this.timeout(process.env.OB_LIVE_TEST ? (1000 * 10) : (1000 * 1));
 
                 describe('get_image', function() {
-                    it('should return a raw image', function(done) {
+                    it('should 404 for non-valid hash', function(done) {
                         ob.get_image({
-                            "hash": '6a37f9f18b1d064debc5908f84153124fc220e0c'
+                          "hash": 'beefbeefbeefbeef000beefbeefdead'
                         }, function(err, code, body) {
                             assert.isNull(err);
                             assert.equal(code, 404);
-                            assert.match(body, /Sorry\. No luck finding/)
+                            assert.match(body, /Sorry\. No luck finding/);
                             done();
                         });
                     });
