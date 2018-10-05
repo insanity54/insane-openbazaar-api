@@ -1,6 +1,6 @@
 # insane-openbazaar-api
 
-[![Build Status](https://travis-ci.org/insanity54/insane-openbazaar-api.svg?branch=master)](https://travis-ci.org/insanity54/insane-openbazaar-api)
+[![Build Status](https://travis-ci.org/insanity54/insane-openbazaar-api.svg?branch=master)](https://travis-ci.org/insanity54/insane-openbazaar-api) [![Greenkeeper badge](https://badges.greenkeeper.io/insanity54/insane-openbazaar-api.svg)](https://greenkeeper.io/)
 
 Openbazaar API client for Nodejs. UNMAINTAINED!
 
